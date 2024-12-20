@@ -5,12 +5,20 @@ export const defaultValue = {
         categories: [],
         suppliers: []
     },
-    setFilter: () => null
+    setFilter: () => null,
+    selectedCategory: [],
+    selectedSupplier: [],
+    setSelectedCategory: () => null,
+    setSelectedSupplier: () => null
 }
 
 type Context = {
     filters: Filter,
-    setFilter: (filterName: string, value: string) => void
+    setFilter: (filterName: string, value: string | string[]) => void
+    selectedCategory: String[],
+    setSelectedCategory: React.Dispatch<React.SetStateAction<String[]>>
+    selectedSupplier: String[],
+    setSelectedSupplier: React.Dispatch<React.SetStateAction<String[]>>
 }
 
 type Filter = { 

@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';;
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -15,21 +15,25 @@ SplashScreen.preventAutoHideAsync();
 export default function InventoryLayout() {
   const colorScheme = useColorScheme();
   const [ filter, setFilter ] = useState(defaultValue.filters);
-
-  const filterHeaderRightHandler = () => {
-    alert('Applying...');
-  };
-
-  const filterHandler = (filterName: string, value: string) => {
+  const [selectedCategory, setSelectedCategory] = useState<String[]>([]);
+  const [selectedSupplier, setSelectedSupplier] = useState<String[]>([]);
+  const route = useRouter();
+  const filterHandler = (filterName: string, value: string | string[]) => {
     setFilter(prevState => ({
       ...prevState,
       [filterName]: filterName == "query" ? value : [...value]
     }));
   }
 
+  const applyFilterHandler = () => {
+    filterHandler('categories', selectedCategory as string[]);
+    filterHandler('suppliers', selectedSupplier as string[]);
+    route.back();
+  }
+
   const filterHeaderRight = () => {
     return (
-      <TouchableOpacity onPress={filterHeaderRightHandler}>
+      <TouchableOpacity onPress={applyFilterHandler}>
         <View>
           <Text>Apply</Text>
         </View>
@@ -37,8 +41,16 @@ export default function InventoryLayout() {
     )
   }
 
+  const value = {
+    filters: filter, 
+    setFilter: filterHandler, 
+    selectedCategory, 
+    selectedSupplier, 
+    setSelectedCategory, 
+    setSelectedSupplier 
+  }
   return (
-    <InventoryContext.Provider value={{filters: filter, setFilter: filterHandler}}>
+    <InventoryContext.Provider value={value}>
       <MenuProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack>

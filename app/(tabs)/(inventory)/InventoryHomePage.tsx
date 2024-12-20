@@ -91,6 +91,14 @@ const InventoryHomePage = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
+                
+            </View>
+            <View style={{flexWrap: 'nowrap', display:'flex', flexDirection:'row', gap: 10, marginBlock: 10}}>
+                {
+                    filters?.categories?.map((category) => (
+                        <View style={{backgroundColor: '#ccc', width:'auto', padding: 10, borderRadius:5}}><Text>{category.toString()}Adqwe</Text></View>
+                    ))
+                }
             </View>
             <List
                 style={{backgroundColor: 'transparent'}}
@@ -144,7 +152,7 @@ const style = StyleSheet.create({
         borderRadius: 5
     },
     filterWrapper: {
-        marginBottom:15, 
+        marginBottom:10, 
         flexDirection: 'row',
         display: 'flex',
         gap: 5
