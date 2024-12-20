@@ -8,15 +8,23 @@ import { routes } from "@/app/types/routes";
 import { GET_ITEMS } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
+import { useContext, useState } from "react";
+import InventoryContext from "./context/InventoryContext";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
     const { ContextMenu } = renderers;
-    const { loading, error, data } = useQuery(GET_ITEMS); 
+    const [search, setSearch] = useState('');
+    const { filters, setFilter } = useContext(InventoryContext);
+    const { loading, error, data } = useQuery(GET_ITEMS, {
+        variables: {
+            filter: filters
+        }
+    }); 
     const renderSearchIcon = () => {
         return <Ionicons name="search-outline" />
     } 
-    console.log(`error`, error);
+  
     const filterButtonHandler = () => {
         router.navigate({pathname: routes.itemFilter as any});
     }
@@ -56,12 +64,17 @@ const InventoryHomePage = () => {
             </View>
         )
     }
+
+    const searchHandler = (value: string) => {
+        setFilter('query', value);
+    } 
+  
     if (error) return <View><Text>Error</Text></View>
-    if (loading) return <Text>Loading...</Text>
+
     return ( 
         <View style={styles.container}>
             <View style={style.filterWrapper}>
-                <Input accessoryLeft={renderSearchIcon} style={style.filterLeft} placeholder="Search Item..."/>
+                <Input onChangeText={searchHandler} accessoryLeft={renderSearchIcon} style={style.filterLeft} placeholder="Search Item..."/>
                 <View style={style.filterRight}>
                     <TouchableOpacity onPress={filterButtonHandler}>
                         <View style={{display:'flex',flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', gap: 5}}>

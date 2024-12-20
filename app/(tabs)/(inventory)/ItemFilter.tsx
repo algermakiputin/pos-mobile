@@ -1,10 +1,28 @@
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, Divider } from "@ui-kitten/components";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { primaryColor } from "@/app/styles/style";
+import { GET_CATEGORIES } from "@/app/src/categories-queries";
+import { GET_SUPPLIER } from "@/app/src/supplier-queries";
+import { useQuery } from "@apollo/client";
 const ItemFilter = () => {
-    const categories = ['Drinks', 'Detergents', 'Fish', 'Frozen Meat', 'Candy', 'Beverage', 'Alcohol', 'Medicine', 'Load'];
-    const suppliers = ['J&T', 'ABS-FISH', 'MAGNOLIA', 'Jupiter', 'Mars', 'Venus', 'Sun & Moon'];
+    const { data: categoriesData } = useQuery(GET_CATEGORIES);
+    const { data: suppliersData } = useQuery(GET_SUPPLIER);
+
+    const categories = useMemo(function() {
+        return categoriesData?.categories.map((category: any) => ({
+            id: category.id,
+            name: category.name
+        }))
+    }, [categoriesData]);
+
+    const suppliers = useMemo(function() {
+        return suppliersData?.suppliers.map((supplier: any) => ({
+            id: supplier.id,
+            name: supplier.name
+        }))
+    }, [categoriesData]);
+
     const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
     const [selectedSupplier, setSelectedSupplier] = useState<string[]>([]);
 
@@ -32,10 +50,10 @@ const ItemFilter = () => {
                     <Divider style={localStyle.divider}/>
                     <View style={localStyle.filterContainer}>
                         {
-                            categories.map((category: string, index: number) => (
-                                <TouchableOpacity onPress={() => categoryFilterSelectHandler(category)} key={`category-${index}`}>
-                                    <View style={[localStyle.labelContainer,  isCategorySelected(category) ? {backgroundColor: primaryColor} : {}]}>
-                                        <Text style={isCategorySelected(category) ? {color: '#fff'} : {}}>{category}</Text>
+                            categories.map((category: any, index: number) => (
+                                <TouchableOpacity onPress={() => categoryFilterSelectHandler(category?.name)} key={`category-${index}`}>
+                                    <View style={[localStyle.labelContainer,  isCategorySelected(category?.name) ? {backgroundColor: primaryColor} : {}]}>
+                                        <Text style={isCategorySelected(category?.name) ? {color: '#fff'} : {}}>{category?.name}</Text>
                                     </View>
                                 </TouchableOpacity>
                             ))
@@ -48,10 +66,10 @@ const ItemFilter = () => {
                     <Divider style={localStyle.divider}/>
                     <View style={localStyle.filterContainer}>
                         {
-                            suppliers.map((supplier: string, index: number) => (
-                                <TouchableOpacity onPress={() => supplierSelectHandler(supplier)} key={`supplier-${index}`}>
+                            suppliers.map((supplier: any, index: number) => (
+                                <TouchableOpacity onPress={() => supplierSelectHandler(supplier?.name)} key={`supplier-${index}`}>
                                     <View style={[localStyle.labelContainer, isSupplierSelected(supplier) ? localStyle.selectedFilter : {}]}>
-                                        <Text style={isSupplierSelected(supplier) ? localStyle.selectedFilterText : {}}>{supplier}</Text>
+                                        <Text style={isSupplierSelected(supplier?.name) ? localStyle.selectedFilterText : {}}>{supplier?.name}</Text>
                                     </View>
                                 </TouchableOpacity>
                             ))

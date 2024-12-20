@@ -13,12 +13,14 @@
       "bundleIdentifier": "com.anonymous.posmobile"
     },
     "android": {
+      "jsEngine": "hermes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.posmobile"
     },
+    
     "web": {
       "bundler": "metro",
       "output": "static",
