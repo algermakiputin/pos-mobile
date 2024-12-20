@@ -1,74 +1,91 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { Layout, Text, } from "@ui-kitten/components";
+import { View, ScrollView, StyleSheet } from "react-native";
+import InventorySummary from "@/components/cards/InventorySummary";
+import QuickMenu from "@/components/navigation/QuickMenu";
+import styles, { primaryColor, primarySpotColor } from "../styles/style";
+import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
+import { useState } from "react";
+import { formatAmount } from "../utils/utils";
+import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
+const data=[ 
+  {value:40000, label: 'Jan'},
+  {value:100000, label: 'Feb'},
+  {value:100000, label: 'Mar'},
+  {value:50000, label: 'Apr'},
+  {value:70000, label: 'May'},
+  {value:30000, label: 'Jun'},
+  {value:30000, label: 'Jul'},
+  {value:30000, label: 'Aug'},
+  {value:35000, label: 'Sep'},
+  {value:102000, label: 'Oct'},
+  {value:158000, label: 'Nov'},
+  {value:33000, label: 'Dec'},
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  return ( 
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={localStyles.welcomeMessage} category="h6">Welcome, John Doe!</Text>
+        <InventorySummary />
+        <QuickMenu />
+        <View style={{backgroundColor:'#fff', marginTop:10, paddingBottom: 20,paddingTop:20, borderRadius:10}} onLayout={({nativeEvent}) => setContainerWidth(nativeEvent.layout.width)}>
+          <Text style={{paddingLeft:10}}>Sales Overview</Text> 
+          <BarChart 
+            nestedScrollEnabled
+            scrollAnimation ={true}
+            width={containerWidth - 30} 
+            hideYAxisText
+            data ={data}
+            showFractionalValues
+            yAxisThickness={0}
+            xAxisThickness={1}
+            overflowTop={10}
+            isAnimated
+            noOfSections={10}
+            rulesThickness={1}
+            verticalLinesColor={'white'}
+            adjustToWidth={true}
+            showGradient
+            frontColor={primaryColor}
+            gradientColor={primarySpotColor}
+            backgroundColor={'#fff'}
+            barWidth={20}
+            barBorderRadius={10}
+            height={200}
+            pointerConfig={{
+              initialPointerIndex: 0,
+              stripBehindBars: false,
+              pointerStripHeight: 150,
+              activatePointersOnLongPress: true,
+              pointerLabelComponent: (items: any) => {
+                return (
+                  <View
+                    style={{
+                      width: 100,
+                      flexWrap: 'wrap',
+                      padding: 6,
+                      borderWidth: 1,
+                      borderRadius: 8,
+                      backgroundColor: '#eee',
+                    }}>
+                    <Text>{(items[0].value)}</Text>
+                  </View>
+                );
+              },
+            }}
+            /> 
+        </View>
+      </View>
+    </ScrollView>
+  )
+} 
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+const localStyles = StyleSheet.create({
+  welcomeMessage: {
+    marginTop: 10,
+    marginBottom: 20
+  }
 });
