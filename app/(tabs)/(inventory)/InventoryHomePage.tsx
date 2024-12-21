@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import styles, { bodyColor } from "@/app/styles/style";
+import styles from "@/app/styles/style";
 import { Input, List, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
@@ -8,7 +8,7 @@ import { routes } from "@/app/types/routes";
 import { GET_ITEMS } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import InventoryContext from "./context/InventoryContext";
 
 const InventoryHomePage = () => {

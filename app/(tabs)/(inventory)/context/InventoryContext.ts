@@ -15,9 +15,9 @@ export const defaultValue = {
 type Context = {
     filters: Filter,
     setFilter: (filterName: string, value: string | string[]) => void
-    selectedCategory: String[],
+    selectedCategory: ObjectValue[],
     setSelectedCategory: React.Dispatch<React.SetStateAction<ObjectValue[]>>
-    selectedSupplier: String[],
+    selectedSupplier: ObjectValue[],
     setSelectedSupplier: React.Dispatch<React.SetStateAction<ObjectValue[]>>
 }
 

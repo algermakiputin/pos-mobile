@@ -11,7 +11,7 @@ import { ObjectValue } from "./context/InventoryContext";
 const ItemFilter = () => {
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
     const { data: suppliersData } = useQuery(GET_SUPPLIER);
-    const { filters, setFilter, selectedCategory, setSelectedCategory, selectedSupplier, setSelectedSupplier } = useContext(InventoryContext);
+    const { selectedCategory, setSelectedCategory, selectedSupplier, setSelectedSupplier } = useContext(InventoryContext);
     const categories = useMemo(function() {
         return categoriesData?.categories.map((category: any) => ({
             id: category.id,
@@ -25,23 +25,20 @@ const ItemFilter = () => {
             name: supplier.name
         }))
     }, [categoriesData]);
- 
-    // const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-    // const [selectedSupplier, setSelectedSupplier] = useState<string[]>([]);
 
     const categoryFilterSelectHandler = (category: ObjectValue) => {
-        if (!selectedCategory?.some((value: any) => value?.id == category.id)) {
+        if (!selectedCategory?.some(value => value?.id == category.id)) {
             setSelectedCategory((prevState) => ([...prevState, category]));
         } else { 
-          setSelectedCategory(selectedCategory.filter((value: any) => value?.id != category.id) as any);
+          setSelectedCategory(selectedCategory.filter(value => value?.id != category.id) as any);
         }
     }
 
     const supplierSelectHandler = (supplier: ObjectValue) => {
-        if (!selectedSupplier?.some((value: any) => value?.id == supplier.id)) {
+        if (!selectedSupplier?.some(value => value?.id == supplier.id)) {
             setSelectedSupplier((prevState) => ([...prevState, supplier]));
         } else {
-          setSelectedSupplier(selectedSupplier.filter((value: any) => value?.id != supplier.id) as any);
+          setSelectedSupplier(selectedSupplier.filter(value => value?.id != supplier.id) as any);
         }
     }
 
