@@ -3,4 +3,7 @@ export type Item = {
     name: string;
     price: string;
     description?: string;
+    stocks: number;
+    supplierName: string;
+    categoryName: string;
 }

@@ -14,11 +14,14 @@ import InventoryContext from "./context/InventoryContext";
 const InventoryHomePage = () => {
     const router = useRouter(); 
     const { ContextMenu } = renderers;
-    const [search, setSearch] = useState('');
     const { filters, setFilter } = useContext(InventoryContext);
     const { loading, error, data } = useQuery(GET_ITEMS, {
         variables: {
-            filter: filters
+            filter: {
+                query: filters.query,
+                categories: filters.categories?.map(category => category?.id),
+                suppliers: filters.suppliers?.map(supplier => supplier.id)
+            }
         }
     }); 
     const renderSearchIcon = () => {
@@ -38,15 +41,15 @@ const InventoryHomePage = () => {
             <View style={styles.card}>
                 <Text style={{color: '#777'}}>0019201092</Text>
                 <Text style={style.itemTitle}>{ item.name }</Text>
-                <View style={styles.row}>
-                    <View style={styles.col1}>
+                <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
+                    <View style={{}}>
                         <View style={style.itemAvatar}></View> 
                     </View>
-                    <View style={[styles.col2, style.productDetailsColumn]}>
-                        <Text>Stocks: 24</Text>
-                        <Text>Supplier: J&B</Text>
-                        <Text>Category: Sabon</Text>
-                        <Text style={style.price}>{ item.price }</Text>
+                    <View style={[style.productDetailsColumn]}>
+                        <Text category="s2">Stocks: <Text category="s1">{item.stocks}</Text></Text>
+                        <Text category="s2">Supplier: <Text category="s1">{item.supplierName}</Text></Text>
+                        <Text category="s2">Category: <Text category="s1">{item.categoryName}</Text></Text>
+                        <Text category="s1" style={style.price}>{ item.price }</Text>
                     </View> 
                 </View> 
                 <Menu renderer={ContextMenu} style={{width:20, position:'absolute', right: 10, bottom:20}}>
@@ -93,10 +96,16 @@ const InventoryHomePage = () => {
                 </View>
                 
             </View>
-            <View style={{flexWrap: 'nowrap', display:'flex', flexDirection:'row', gap: 10, marginBlock: 10}}>
+            <View style={{flexWrap: 'wrap', display:'flex', flexDirection:'row', gap: 10, marginBlock: 10}}>
                 {
                     filters?.categories?.map((category) => (
-                        <View style={{backgroundColor: '#ccc', width:'auto', padding: 10, borderRadius:5}}><Text>{category.toString()}Adqwe</Text></View>
+                        <View key={`category-${category.id}`} style={style.filterLabel}><Text>{category?.name?.toString()}</Text></View>
+                    ))
+                    
+                }
+                {
+                    filters?.suppliers?.map((supplier) => (
+                        <View key={`supplier-${supplier.id}`} style={style.filterLabel}><Text>{supplier?.name?.toString()}</Text></View>
                     ))
                 }
             </View>
@@ -138,7 +147,8 @@ const style = StyleSheet.create({
         fontSize: 14
     },
     productDetailsColumn: {
-      
+        flexWrap: 'nowrap',
+        flex:1
     },
     itemTitle: {
         fontSize: 18,
@@ -146,13 +156,12 @@ const style = StyleSheet.create({
         marginBottom: 10
     },
     itemAvatar: {
-        height:85,
-        width:85,
+        height:75,
+        width:75,
         backgroundColor:'#ddd',
         borderRadius: 5
     },
     filterWrapper: {
-        marginBottom:10, 
         flexDirection: 'row',
         display: 'flex',
         gap: 5
@@ -173,6 +182,12 @@ const style = StyleSheet.create({
     },
     price: {
         fontWeight: 'bold'
+    },
+    filterLabel: {
+        backgroundColor: '#ccc', 
+        width:'auto', 
+        padding: 10, 
+        borderRadius:5
     }
 });
 

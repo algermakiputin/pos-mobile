@@ -6,6 +6,8 @@ import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { useQuery } from "@apollo/client";
 import InventoryContext from "./context/InventoryContext";
+import { ObjectValue } from "./context/InventoryContext";
+
 const ItemFilter = () => {
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
     const { data: suppliersData } = useQuery(GET_SUPPLIER);
@@ -27,28 +29,28 @@ const ItemFilter = () => {
     // const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
     // const [selectedSupplier, setSelectedSupplier] = useState<string[]>([]);
 
-    const categoryFilterSelectHandler = (category: string) => {
-        if (!selectedCategory.includes(category)) {
-            setSelectedCategory((prevState) => ([...prevState as string[], category]));
-        } else {
-            setSelectedCategory(selectedCategory.filter(id => id != category));
+    const categoryFilterSelectHandler = (category: ObjectValue) => {
+        if (!selectedCategory?.some((value: any) => value?.id == category.id)) {
+            setSelectedCategory((prevState) => ([...prevState, category]));
+        } else { 
+          setSelectedCategory(selectedCategory.filter((value: any) => value?.id != category.id) as any);
         }
     }
 
-    const supplierSelectHandler = (supplier: string) => {
-        if (!selectedSupplier.includes(supplier)) {
-            setSelectedSupplier((prevState) => ([...prevState as string[], supplier]));
+    const supplierSelectHandler = (supplier: ObjectValue) => {
+        if (!selectedSupplier?.some((value: any) => value?.id == supplier.id)) {
+            setSelectedSupplier((prevState) => ([...prevState, supplier]));
         } else {
-            setSelectedSupplier(selectedSupplier.filter(id => id != supplier));
+          setSelectedSupplier(selectedSupplier.filter((value: any) => value?.id != supplier.id) as any);
         }
     }
 
     const isCategorySelected = (category: string) => {
-        return selectedCategory?.some((value) => value == category);
+        return selectedCategory?.some((value: any) => value?.id == category);
     }
 
     const isSupplierSelected = (supplier: string) => {
-        return selectedSupplier?.some((value) => value == supplier);
+        return selectedSupplier?.some((value: any) => value?.id == supplier);
     }
 
     return ( 
@@ -60,7 +62,7 @@ const ItemFilter = () => {
                     <View style={localStyle.filterContainer}>
                         {
                             categories?.map((category: any, index: number) => (
-                                <TouchableOpacity onPress={() => categoryFilterSelectHandler(category?.id)} key={`category-${index}`}>
+                                <TouchableOpacity onPress={() => categoryFilterSelectHandler(category)} key={`category-${index}`}>
                                     <View style={[localStyle.labelContainer,  isCategorySelected(category?.id) ? {backgroundColor: primaryColor} : {}]}>
                                         <Text style={isCategorySelected(category?.id) ? {color: '#fff'} : {}}>{category?.name}</Text>
                                     </View>
@@ -76,7 +78,7 @@ const ItemFilter = () => {
                     <View style={localStyle.filterContainer}>
                         {
                             suppliers?.map((supplier: any, index: number) => (
-                                <TouchableOpacity onPress={() => supplierSelectHandler(supplier?.id)} key={`supplier-${index}`}>
+                                <TouchableOpacity onPress={() => supplierSelectHandler(supplier)} key={`supplier-${index}`}>
                                     <View style={[localStyle.labelContainer, isSupplierSelected(supplier?.id) ? localStyle.selectedFilter : {}]}>
                                         <Text style={isSupplierSelected(supplier?.id) ? localStyle.selectedFilterText : {}}>{supplier?.name}</Text>
                                     </View>

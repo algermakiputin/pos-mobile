@@ -7,7 +7,7 @@ import { routes } from '@/app/types/routes';
 import { MenuProvider } from 'react-native-popup-menu';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@ui-kitten/components';
-import InventoryContext, { defaultValue } from './context/InventoryContext';
+import InventoryContext, { defaultValue, ObjectValue } from './context/InventoryContext';
 import { useState } from 'react';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -15,8 +15,9 @@ SplashScreen.preventAutoHideAsync();
 export default function InventoryLayout() {
   const colorScheme = useColorScheme();
   const [ filter, setFilter ] = useState(defaultValue.filters);
-  const [selectedCategory, setSelectedCategory] = useState<String[]>([]);
-  const [selectedSupplier, setSelectedSupplier] = useState<String[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<ObjectValue[]>([]);
+  const [selectedSupplier, setSelectedSupplier] = useState<ObjectValue[]>([]);
+
   const route = useRouter();
   const filterHandler = (filterName: string, value: string | string[]) => {
     setFilter(prevState => ({
@@ -26,8 +27,8 @@ export default function InventoryLayout() {
   }
 
   const applyFilterHandler = () => {
-    filterHandler('categories', selectedCategory as string[]);
-    filterHandler('suppliers', selectedSupplier as string[]);
+    filterHandler('categories', selectedCategory as any);
+    filterHandler('suppliers', selectedSupplier as any);
     route.back();
   }
 
