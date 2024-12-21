@@ -9,12 +9,12 @@ import { GET_ITEMS } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
 import { useContext } from "react";
-import InventoryContext from "./context/InventoryContext";
+import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
     const { ContextMenu } = renderers;
-    const { filters, setFilter } = useContext(InventoryContext);
+    const { filters, setFilter, removeFilter } = useContext(InventoryContext);
     const { loading, error, data } = useQuery(GET_ITEMS, {
         variables: {
             filter: {
@@ -24,6 +24,8 @@ const InventoryHomePage = () => {
             }
         }
     }); 
+
+    console.log(`filters`, filters);
     const renderSearchIcon = () => {
         return <Ionicons name="search-outline" />
     } 
@@ -99,13 +101,27 @@ const InventoryHomePage = () => {
             <View style={{flexWrap: 'wrap', display:'flex', flexDirection:'row', gap: 10, marginBlock: 10}}>
                 {
                     filters?.categories?.map((category) => (
-                        <View key={`category-${category.id}`} style={style.filterLabel}><Text>{category?.name?.toString()}</Text></View>
+                        <TouchableOpacity
+                            key={`category-${category.id}`} 
+                            onPress={() => removeFilter(ObjectFilterEnum.CATEGORIES, category.id)}>
+                            <View 
+                                style={style.filterLabel}>
+                                    <Text>{category?.name?.toString()}</Text>
+                            </View>
+                        </TouchableOpacity>
                     ))
-                    
                 }
                 {
                     filters?.suppliers?.map((supplier) => (
-                        <View key={`supplier-${supplier.id}`} style={style.filterLabel}><Text>{supplier?.name?.toString()}</Text></View>
+                        <TouchableOpacity 
+                            key={`supplier-${supplier.id}`} 
+                            onPress={() => removeFilter(ObjectFilterEnum.SUPPLIERS, supplier.id)}
+                            >
+                            <View 
+                                style={style.filterLabel}>
+                                    <Text>{supplier?.name?.toString()}</Text>
+                            </View>
+                        </TouchableOpacity>
                     ))
                 }
             </View>

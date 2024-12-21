@@ -9,7 +9,8 @@ export const defaultValue = {
     selectedCategory: [],
     selectedSupplier: [],
     setSelectedCategory: () => null,
-    setSelectedSupplier: () => null
+    setSelectedSupplier: () => null,
+    removeFilter: () => null
 }
 
 type Context = {
@@ -19,6 +20,7 @@ type Context = {
     setSelectedCategory: React.Dispatch<React.SetStateAction<ObjectValue[]>>
     selectedSupplier: ObjectValue[],
     setSelectedSupplier: React.Dispatch<React.SetStateAction<ObjectValue[]>>
+    removeFilter: (filterName: ObjectFilterEnum, id: String) => void
 }
 
 export type ObjectValue = {
@@ -26,6 +28,10 @@ export type ObjectValue = {
     name: String
 }
 
+export enum ObjectFilterEnum  {
+    CATEGORIES = "categories",
+    SUPPLIERS = "suppliers"
+}
 type Filter = { 
     query: String,
     categories: ObjectValue[],

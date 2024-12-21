@@ -7,7 +7,7 @@ import { routes } from '@/app/types/routes';
 import { MenuProvider } from 'react-native-popup-menu';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@ui-kitten/components';
-import InventoryContext, { defaultValue, ObjectValue } from './context/InventoryContext';
+import InventoryContext, { defaultValue, ObjectFilterEnum, ObjectValue } from './context/InventoryContext';
 import { useState } from 'react';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +24,11 @@ export default function InventoryLayout() {
       ...prevState,
       [filterName]: filterName == "query" ? value : [...value]
     }));
+  }
+
+  const removeFilter = (filterName: ObjectFilterEnum, id: string) => {
+    const newFilterValue = filter[filterName]?.filter((category: ObjectValue) => category.id != id);
+    filterHandler(filterName, newFilterValue);
   }
 
   const applyFilterHandler = () => {
@@ -48,7 +53,8 @@ export default function InventoryLayout() {
     selectedCategory, 
     selectedSupplier, 
     setSelectedCategory, 
-    setSelectedSupplier 
+    setSelectedSupplier,
+    removeFilter
   }
   return (
     <InventoryContext.Provider value={value}>
