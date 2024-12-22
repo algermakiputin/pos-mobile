@@ -15,11 +15,11 @@ export const defaultValue = {
             total: ''
         },
         customerName: '',
-        customerId: ''
+        customerId: 0
     },
     quantityHandler: (action: string, item: any) => 0,
     setCustomer: (data: any) => null,
-    orderTotal: 0,
+    orderTotal: 0
 }
 
 type Context = {

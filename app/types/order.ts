@@ -1,7 +1,7 @@
 export type Order = {
     cart: Cart,
     customerName: string,
-    customerId: string
+    customerId: Number
 }
 
 export type Cart = {

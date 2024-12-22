@@ -98,7 +98,9 @@ export default function OrdersLayout() {
             name='receipt'
             options={{
               headerTitle: 'Receipt',
-              headerTitleAlign: 'center'
+              headerTitleAlign: 'center',
+              headerBackTitle: 'back',
+              headerBackVisible: false
             }}
           />
         </Stack>

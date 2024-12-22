@@ -5,45 +5,45 @@ import styles from "@/app/styles/style";
 import Button from "@/components/buttons/Button";
 import { useRouter } from "expo-router";
 import OrderContext from "./context/ordersContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { CartLineItem } from "@/app/types/order";
 import { formatAmount } from "@/app/utils/utils";
 import { STORE_SALES } from "@/app/src/sales-queries";
 import { useMutation } from "@apollo/client";
+import { routes } from "@/app/types/routes";
 
 const Summary = () => {
   const route = useRouter();
-  const {order, orderTotal, resetState} = useContext(OrderContext);
-
+  const {order, orderTotal} = useContext(OrderContext);
+  
   const renderItemIcon = (props: any) => (
     <View style={{height:55,width:55,backgroundColor:'#777', borderRadius:5}}>
     </View>
   );
 
-  const [storeSales, { error, loading, data}] = useMutation(STORE_SALES, { variables : {
+  const [storeSales] = useMutation(STORE_SALES, { variables : {
     sales: order
   }})
   
   const renderItemAccessory = (total: number): React.ReactElement => (
-      <Layout style={style.quantity}>
-          <Text>{formatAmount(total)}</Text>
-      </Layout>
-    );
+    <Layout style={style.quantity}>
+        <Text>{formatAmount(total)}</Text>
+    </Layout>
+  );
     
   const submitHandler = async () => {
-    const store = await storeSales();
-    console.log(`store`, JSON.stringify(store));
-    route.navigate('/(orders)/receipt');
+    await storeSales();
+    route.navigate({pathname: routes.receipt as any});
   }
-  console.log(`error`, error);
+  
   const renderItem = ({ item, index }: { item: CartLineItem; index: number }): React.ReactElement => (
-      <ListItem
-        title={`${item.name} ${index + 1}`}
-        description={`${item.quantity}x ${item.price}`}
-        accessoryLeft={renderItemIcon}
-        accessoryRight={() => renderItemAccessory((Number(item?.price) * item.quantity))}
-      />
-    );
+    <ListItem
+      title={`${item.name} ${index + 1}`}
+      description={`${item.quantity}x ${item.price}`}
+      accessoryLeft={renderItemIcon}
+      accessoryRight={() => renderItemAccessory((Number(item?.price) * item.quantity))}
+    />
+  );
 
   return (
     <View style={styles.container}>

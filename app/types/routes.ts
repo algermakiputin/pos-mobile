@@ -8,5 +8,6 @@ export enum routes {
     editItem = "EditItem",
     itemFilter = "ItemFilter",
     sales = "Sales",
-    orders = "Orders"
+    orders = "Orders",
+    receipt = "Receipt"
 };

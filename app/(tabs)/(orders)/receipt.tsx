@@ -1,18 +1,27 @@
 import { View } from "react-native";
 import styles from "@/app/styles/style";
-import { Text, Divider } from "@ui-kitten/components";
+import { Text, Divider, Button } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import OrderContext from "./context/ordersContext";
+import { useRouter } from "expo-router";
+import { routes } from "@/app/types/routes";
 
 const Receipt = () => {
-    const { order, orderTotal } = useContext(OrderContext);
+    const { order, orderTotal, resetState, newOrder } = useContext(OrderContext);
+    const route = useRouter();
+
+    const newOrderButtonHandler = () => {
+        if (resetState) resetState();
+        route.navigate({pathname: routes.orders as any});
+    }
+
     return (
         <View style={[styles.container, {borderRadius: 10}]}>
             <View style={style.receiptWrapper}>
                 <Text style={style.header} category="h6">Order Complete!</Text>
                 <Text style={style.subTitle}>{order?.cart?.total}</Text>
-                <Divider style={[style.divider, {marginBottom: 30}]} />
+                <Divider style={[style.divider, styles.mb30]} />
                 <View style={[styles.flexColumns, styles.mb5]}>
                     <Text>Ref Number:</Text>
                     <Text>1010239000</Text>
@@ -25,17 +34,22 @@ const Receipt = () => {
                     <Text>Customer:</Text>
                     <Text>{order?.customerName || 'Walk In Customer'}</Text>
                 </View>
-                <Divider style={[style.divider, {marginTop: 30}]} />
+                <Divider style={[style.divider, styles.mt30]} />
                 <View style={[styles.flexColumns, styles.mb5]}>
                     <Text>Total Amount</Text>
                     <Text style={styles.bold}>{orderTotal}</Text>
                 </View>
             </View>
+            <Button onPress={newOrderButtonHandler} style={style.button} status="primary">New Order</Button>
         </View>
     );
 }
 
 const style = StyleSheet.create({
+    button: {
+        marginTop: 10, 
+        borderRadius: 10
+    },
     receiptWrapper: {
         backgroundColor: '#fff',
         padding: 20,
@@ -49,7 +63,6 @@ const style = StyleSheet.create({
         textAlign: 'center'
     },
     divider: {
-        // marginTop: 20,
         marginBottom: 20
     }
 });
