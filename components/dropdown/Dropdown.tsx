@@ -1,6 +1,7 @@
 import SelectDropdown from 'react-native-select-dropdown'
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@ui-kitten/components';
+import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
     data: Data[],
@@ -30,7 +31,8 @@ const Dropdown = (props: Props) => {
                 <Text style={styles.dropdownButtonTxtStyle}>
                     {(selectedItem && selectedItem.title) || props.placeholder}
                 </Text>
-                {/* <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} /> */}
+                   
+                <Ionicons name={isOpened ? 'chevron-up-outline' : 'chevron-down-outline'} size={14} />
                 </View>
             );
             }}
@@ -53,13 +55,14 @@ export default Dropdown;
 const styles = StyleSheet.create({
 dropdownButtonStyle: {
     width: 140,
-    height: 40,
+    // height: 40,
     backgroundColor: '#E9ECEF',
     borderRadius: 12,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 12,
+    padding: 10
 },
 dropdownButtonTxtStyle: {
     flex: 1,

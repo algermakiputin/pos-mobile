@@ -6,6 +6,8 @@ export const accentColor = "#72aca9";
 export const bodyColor = '#f4f4f5';
 export const blackLightShade = "#777";
 export const lighterDark = "#ddd";
+export const secondaryTextColor = "#999";
+export const white = "#ffffff";
 const styles = StyleSheet.create({
     mt30: {
         marginTop: 30
@@ -84,7 +86,8 @@ const styles = StyleSheet.create({
     sectionHeader: {
         fontWeight: 'bold',
         fontSize: 18,
-        marginBottom: 15
+        marginBottom: 15,
+       
     },
     flexColumns: {
         display:'flex',

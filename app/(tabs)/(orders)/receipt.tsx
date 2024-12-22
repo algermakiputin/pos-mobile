@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { routes } from "@/app/types/routes";
 
 const Receipt = () => {
-    const { order, orderTotal, resetState, newOrder } = useContext(OrderContext);
+    const { order, orderTotal, resetState } = useContext(OrderContext);
     const route = useRouter();
 
     const newOrderButtonHandler = () => {
