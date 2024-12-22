@@ -19,6 +19,7 @@ const Dropdown = (props: Props) => {
             onSelect={(selectedItem, index) => {
                 if (props?.onSelect) props?.onSelect(selectedItem);
             }}
+            defaultValue={''}
             searchPlaceHolder={props.placeholder}
             renderButton={(selectedItem, isOpened) => {
             return (

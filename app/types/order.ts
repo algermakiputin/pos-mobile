@@ -13,5 +13,7 @@ export type CartLineItem = {
     itemId: string,
     name: string,
     price: string,
-    quantity: number
+    quantity: number,
+    capital: number,
+    barcode: string,
 }

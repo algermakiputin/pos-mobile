@@ -1,19 +1,31 @@
 import { Input, Layout, Text, List, Divider } from "@ui-kitten/components";
 import { ScrollView, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import styles, { primaryColor, bodyColor, primarySpotColor } from "@/app/styles/style";
+import styles, { primaryColor, bodyColor, primarySpotColor, secondaryColor, blackLightShade, accentColor, lighterDark } from "@/app/styles/style";
 import Button from "@/components/buttons/Button";
 import { Ionicons } from "@expo/vector-icons";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Order, CartLineItem } from "@/app/types/order";
+import { useContext, useState } from "react";
 import { Item } from "@/app/types/item";
 import OrderContext from "./context/ordersContext";
+import { GET_CATEGORIES } from "@/app/src/categories-queries";
+import { GET_ITEMS } from "@/app/src/item-queries";
+import { useQuery } from "@apollo/client";
 
 const Orders = () => {
     const route = useRouter();
+    const [search, setSearch] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const { order, quantityHandler, orderTotal} = useContext(OrderContext);
     const [selectedIndex, setSelectedIndex] = useState<number>();
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const { data: categoriesData } = useQuery(GET_CATEGORIES);
+    const { data: itemsData } = useQuery(GET_ITEMS, {
+        variables: {
+            filter: {
+                query: search,
+                categories: selectedCategory ? [selectedCategory] : []
+            }
+        }
+    });
     const processOrderHandler = () => {
         if (order?.cart?.lineItems?.length) route.navigate('/(orders)/summary');
     }
@@ -26,48 +38,16 @@ const Orders = () => {
         return 0;
     }
 
-    const data = [
-        {
-            id: '1',
-            name: 'Surf Powder',
-            price: "7.50",
-        },
-        {
-            id: '2',
-            name: 'Vinegar',
-            price: "7.50"
-        },
-        {
-            id: '3',
-            name: 'Coke Litro',
-            price: "40.00"
-        },
-        {
-            id: '4',
-            name: 'Globe Load 10',
-            price: "11.50"
-        },
-        {
-            id: '5',
-            name: 'Globa Load 20',
-            price: "22.00"
-        },
-        {
-            id: '6',
-            name: 'Nips Chocolate',
-            price: "10.00"
-        },
-    ];
-
     const renderItem = ({ item, index }: { item: Item, index: number }) => {
         const isSelected = (selectedIndex == index || renderQuantity(item.id));
         return (
             <TouchableOpacity onPress={() => setSelectedIndex(index)}>
-                <Layout style={[style.item, isSelected ? {borderWidth: 1, borderColor: primaryColor} : {}]}>
+                <Layout style={[style.item, isSelected ? {borderWidth: 1, borderColor: lighterDark} : {}]}>
                     <Layout  style={[style.layout, style.avatar]}>
                         <Ionicons name="image-outline" size={30} style={{color: '#ccc'}}/>
                     </Layout>
                     <Layout  style={[style.layout, {alignItems:'flex-start', maxWidth:165}]}>
+                        <Text category="s2" style={{color: '#999'}}>{item.barcode}</Text>
                         <Text>{item.name}</Text>
                         {
                             isSelected ? <Text style={style.price}>{item.price}</Text> : null
@@ -95,55 +75,38 @@ const Orders = () => {
         )
     }
 
-    const searchIcon = () => {
-        return <Ionicons name="search-outline" />
-    }
-
+    const searchHandler = (search: string) => {
+        setSearch(search);
+    }   
+    
     return (
         <View style={style.container}>
             <View style={style.searchContainer}>
-                <Input style={{backgroundColor:'#fff', borderRadius: 10}} placeholder="Search Item" accessoryLeft={searchIcon} />
+                <Input onChangeText={searchHandler} style={style.searchInput} placeholder="Search Item" accessoryLeft={<Ionicons name="search-outline" />} />
             </View>
             <View style={style.categoryContainer}> 
                 <ScrollView  horizontal={true} showsHorizontalScrollIndicator={false}>
                     <Layout style={[style.categoriesWrapper]}>
-                        <TouchableOpacity onPress={() => alert(0)}>
-                            <View style={[style.category, style.categorySelected]}> 
-                                <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14} />
-                                <Text style={style.selectedCategoryColor}>All</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <View style={style.category}> 
-                            <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14}/>
-                            <Text>Liquor</Text>
-                        </View>
-                        <View style={style.category}> 
-                            <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14}/>
-                            <Text>Drinks</Text>
-                        </View>
-                        <View style={style.category}> 
-                            <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14}/>
-                            <Text>Frozen</Text>
-                        </View>
-                        <View style={style.category}> 
-                            <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14}/>
-                            <Text>Fish</Text>
-                        </View>
-                        <View style={style.category}> 
-                            <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14}/>
-                            <Text>Soft Drinks</Text>
-                        </View>
-                        <View style={style.category}> 
-                            <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14}/>
-                            <Text>Detergents</Text>
-                        </View>
+                        {
+                            categoriesData?.categories?.map((category: any) => (
+                                <TouchableOpacity 
+                                    onPress={() => setSelectedCategory(category?.id)} 
+                                    style={[style.category, category?.id == selectedCategory ? style.categorySelected : {}]}
+                                    key={`order-category-${category?.id}`}
+                                    >
+                                    <Ionicons name="grid-outline" color={primaryColor} style={style.categoryIcon} size={14} />
+                                    <Text category="s2" style={style.selectedCategoryColor}>{category?.name}</Text>
+                                </TouchableOpacity>
+                            ))
+                        }
+                        
                     </Layout>
                 </ScrollView>
             </View>
             <View style={[styles.container, {paddingTop: 10}]}>
                 <List
                     style={style.listStyle}
-                    data={data}
+                    data={itemsData?.items}
                     renderItem={renderItem}
                 />
             </View> 
@@ -198,19 +161,19 @@ const style = StyleSheet.create({
         backgroundColor: '#f4f4f5',
         padding: 10,
         borderRadius: 100,
-        marginBottom: 3,
+        marginBottom: 5,
     },
     category: {
-        paddingTop: 10,
-        paddingBottom: 10,
+        padding:10,
         borderWidth: 1,
         borderColor: '#ddd',
         borderRadius: 15,
-        width: 92,
+        width: 135,
         marginRight: 10,
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexWrap: 'nowrap'
     },
     categoriesWrapper: {
         flex:1, 
@@ -267,6 +230,10 @@ const style = StyleSheet.create({
         paddingRight: 20,
         marginBottom:10, 
         height:50
+    },
+    searchInput: {
+        backgroundColor:'#fff', 
+        borderRadius: 10
     }
 });
 

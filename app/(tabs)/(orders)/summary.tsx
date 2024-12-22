@@ -8,35 +8,34 @@ import OrderContext from "./context/ordersContext";
 import { useContext } from "react";
 import { CartLineItem } from "@/app/types/order";
 import { formatAmount } from "@/app/utils/utils";
-import { defaultValue } from "./context/ordersContext";
-interface IListItem {
-  title: string;
-  description: string;
-}
-  
-const data = new Array(3).fill({
-  title: 'Title for Item',
-  description: 'Description for Item',
-});
+import { STORE_SALES } from "@/app/src/sales-queries";
+import { useMutation } from "@apollo/client";
 
 const Summary = () => {
   const route = useRouter();
   const {order, orderTotal, resetState} = useContext(OrderContext);
+
   const renderItemIcon = (props: any) => (
     <View style={{height:55,width:55,backgroundColor:'#777', borderRadius:5}}>
     </View>
   );
 
+  const [storeSales, { error, loading, data}] = useMutation(STORE_SALES, { variables : {
+    sales: order
+  }})
+  
   const renderItemAccessory = (total: number): React.ReactElement => (
       <Layout style={style.quantity}>
           <Text>{formatAmount(total)}</Text>
       </Layout>
     );
     
-  const submitHandler = () => {
+  const submitHandler = async () => {
+    const store = await storeSales();
+    console.log(`store`, JSON.stringify(store));
     route.navigate('/(orders)/receipt');
   }
-
+  console.log(`error`, error);
   const renderItem = ({ item, index }: { item: CartLineItem; index: number }): React.ReactElement => (
       <ListItem
         title={`${item.name} ${index + 1}`}
@@ -48,6 +47,17 @@ const Summary = () => {
 
   return (
     <View style={styles.container}>
+      <View style={{backgroundColor: '#fff', borderRadius: 5}}>
+        <Text category="h6" style={{marginBottom: 10, paddingLeft: 10,paddingTop: 10}}>Order Details</Text>
+        <Divider />
+        <List
+          data={order.cart.lineItems}
+          renderItem={renderItem}
+          ItemSeparatorComponent={Divider}
+          style={{maxHeight: 300, borderRadius: 10}}
+        />
+      </View>  
+      <View style={{marginTop: 10}}></View>
       <CustomerSelectCard /> 
       <Divider style={styles.mb10}/>
       <View style={style.priceSummaryContainer}>
@@ -62,17 +72,6 @@ const Summary = () => {
           <Text><Text style={style.textAmount}>{formatAmount(orderTotal)}</Text></Text>
         </View>
       </View> 
-      <Divider style={style.divider}/>
-      <View style={{backgroundColor: '#fff', borderRadius: 5}}>
-        <Text category="s1" style={{marginBottom: 10, paddingLeft: 10,paddingTop: 10}}>Order Details</Text>
-        <Divider />
-        <List
-          data={order.cart.lineItems}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Divider}
-        />
-      </View>  
-      
       <View style={styles.floatBottom}>
         <Button itemCount={order?.cart?.lineItems?.length} total={orderTotal} onPressHandler={submitHandler} title="Complete Order"/>
       </View>

@@ -8,7 +8,9 @@ export const defaultValue = {
                 itemId: '',
                 name: '',
                 price: '',
-                quantity: 0
+                quantity: 0,
+                capital: 0,
+                barcode: ''
             }],
             total: ''
         },

@@ -6,4 +6,6 @@ export type Item = {
     stocks: number;
     supplierName: string;
     categoryName: string;
+    barcode: string;
+    capital: number;
 }

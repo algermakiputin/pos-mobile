@@ -5,7 +5,7 @@ export const secondaryColor = "#31ABFF";
 export const accentColor = "#72aca9";
 export const bodyColor = '#f4f4f5';
 export const blackLightShade = "#777";
-
+export const lighterDark = "#ddd";
 const styles = StyleSheet.create({
     bold: {
         fontWeight: 700

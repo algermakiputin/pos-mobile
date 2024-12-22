@@ -44,10 +44,12 @@ export default function OrdersLayout() {
                     lineItems: [
                         ...prevState?.cart?.lineItems?.length ? prevState?.cart?.lineItems : [],
                         {
-                            itemId: item.id,
-                            name: item.name,
-                            price: item.price,
-                            quantity: 1
+                          itemId: item.id,
+                          name: item.name,
+                          price: item.price,
+                          quantity: 1,
+                          capital: item.capital,
+                          barcode: item.barcode
                         }
                     ]
                 }

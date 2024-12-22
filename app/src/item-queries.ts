@@ -10,6 +10,8 @@ export const GET_ITEMS = gql`
             stocks
             categoryName
             supplierName
+            barcode,
+            capital
         }
     }
 `;
