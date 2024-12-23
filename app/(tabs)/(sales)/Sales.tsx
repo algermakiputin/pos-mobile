@@ -1,27 +1,31 @@
 import { ScrollView, StyleSheet, View, Dimensions } from "react-native";
-import styles, { bodyColor, lighterDark, secondaryTextColor } from "@/app/styles/style";
-import { Button, IconElement, List, ListItem, Layout, Text, Divider } from '@ui-kitten/components';
+import styles, { secondaryTextColor } from "@/app/styles/style";
+import { IconElement, List, ListItem, Layout, Text, Divider } from '@ui-kitten/components';
 import { Fragment } from "react";
 import Dropdown from "@/components/dropdown/Dropdown";
+import { GET_SALES_ANALYTICS } from "@/app/src/sales-queries";
+import { useQuery } from "@apollo/client";
+import { formatAmount } from "@/app/utils/utils";
 
 const Sales = () => {
     const { width } = Dimensions.get('window');
+    const { data: salesData } = useQuery(GET_SALES_ANALYTICS);
 
-    const renderItemAccessory = (): React.ReactElement => (
+    const renderItemAccessory = (total: number): React.ReactElement => (
         <View>
-            <Text>180</Text>
+            <Text style={{fontWeight: 700, paddingRight: 5}}>{ formatAmount(total) }</Text>
         </View>
-      );
+    );
     const renderItemIcon = (index: number): IconElement => (
         <Text>{index}</Text>
-      );
+    );
     
     const renderItem = ({ item, index }: { item: any; index: number }): React.ReactElement => (
         <ListItem
-            title={`${item.title} ${index + 1}`}
-            description={`${item.description}`}
+            title={ () => <Text style={{color:'#777'}}>{ item?.transaction_number }</Text>}
+            description={() => <View><Text category="s2">{item?.totalItems} Items | 04-21-2024</Text><Text category="s2">Customer:  Walk In</Text></View>}
             accessoryLeft={renderItemIcon(index + 1)}
-            accessoryRight={renderItemAccessory}
+            accessoryRight={() => renderItemAccessory(item?.total)}
         />
     );
 
@@ -32,9 +36,9 @@ const Sales = () => {
     });
 
     const dropdownData = [{title: 'Today'}, {title: 'Yesterday'}, {title: 'This Month'}, {title: 'Last Month'}];
-
+  
     return (
-        <Fragment>
+        <View style={{flex: 1, flexDirection: 'column'}}>
             <View style={{paddingLeft: 20, paddingRight: 20, marginBottom: 15, marginTop: 15, borderRadius: 10}}>
                 <View style={[style.statisticsContainer]}>
                     <View style={[style.statisticHeader, { width: width - 60 }]}>
@@ -49,38 +53,37 @@ const Sales = () => {
                             </Layout>
                         </Layout>
                     </View>
-                    <ScrollView horizontal={true}>
-                        <Layout style={[styles.row, { gap: 15}]}>
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                        <Layout style={[styles.row, { gap: 15, paddingRight:100}]}>
                             <Layout style={[style.flexItem, {backgroundColor: ''}]}>
                                 <Text style={style.columnLabel}>Total Earnings</Text>
-                                <Text style={[style.amountLabel, style.labelBorderRight]}>1,000,000</Text>
-                                
+                                <Text style={[style.amountLabel, style.labelBorderRight]}>{ (formatAmount(salesData?.getSales?.totalEarnings)) }</Text>  
                             </Layout>
                             <Layout style={style.flexItem}>
                                 <Text style={style.columnLabel}>Item Sold</Text>
-                                <Text style={[style.amountLabel, style.labelBorderRight]}>590</Text>
+                                <Text style={[style.amountLabel, style.labelBorderRight]}>{ formatAmount(salesData?.getSales?.itemSold) }</Text>
                             </Layout>
                             <Layout style={style.flexItem}>
                                 <Text style={style.columnLabel}>Net Sales</Text>
-                                <Text style={style.amountLabel}>10,000,000.00</Text>
+                                <Text style={style.amountLabel}>{ formatAmount(salesData?.getSales?.netSales) }</Text>
                             </Layout>
                         </Layout>
                     </ScrollView>
                 </View> 
             </View>
-            <View style={[{paddingLeft: 20, paddingRight: 20}]}>
+            <View style={[{paddingLeft: 20, paddingRight: 20, flex: 1, height: '100%', marginBottom: 65}]}>
                 <Layout style={{borderRadius: 10}}>
                     <Text style={[styles.sectionHeader, {paddingLeft: 15,paddingTop:15}]}>Recent Transaction</Text>
                     <Divider/>
                     <List
-                        style={{}}
-                        data={data}
+                        data={salesData?.getSales?.transactions}
                         renderItem={renderItem}
                         ItemSeparatorComponent={Divider}
+                        style={{height: '100%'}}
                     />
                 </Layout>
             </View>
-        </Fragment>
+        </View>
     );
 }
 

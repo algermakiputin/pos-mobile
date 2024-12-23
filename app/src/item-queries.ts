@@ -1,8 +1,9 @@
 import { gql } from "@apollo/client";
 
 export const GET_ITEMS = gql`
-    query Items($filter: ItemFilter) {
-        items(filter: $filter) {
+    query Items {
+        items {
+            data {
             id
             name
             description
@@ -10,8 +11,10 @@ export const GET_ITEMS = gql`
             stocks
             categoryName
             supplierName
-            barcode,
+            barcode
             capital
+            }
+            count
         }
     }
 `;

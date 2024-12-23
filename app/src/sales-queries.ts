@@ -8,3 +8,18 @@ export const STORE_SALES = gql`
         }
     }
 `;
+
+export const GET_SALES_ANALYTICS = gql`
+    query GetSales {
+        getSales {
+            totalEarnings
+            itemSold
+            netSales
+            transactions {
+            transaction_number
+            total
+            totalItems
+            }
+        }
+    }
+`;

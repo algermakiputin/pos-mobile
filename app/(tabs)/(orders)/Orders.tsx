@@ -104,9 +104,10 @@ const Orders = () => {
                 </ScrollView>
             </View>
             <View style={[styles.container, {paddingTop: 10}]}>
+                <Text style={{marginBottom: 10, color: '#777'}}>Total 342 Items</Text>
                 <List
                     style={style.listStyle}
-                    data={itemsData?.items}
+                    data={itemsData?.items?.data}
                     renderItem={renderItem}
                 />
             </View> 
@@ -173,7 +174,7 @@ const style = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        flexWrap: 'nowrap'
+        flexWrap: 'nowrap',
     },
     categoriesWrapper: {
         flex:1, 

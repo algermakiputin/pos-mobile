@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import styles from "@/app/styles/style";
+import styles, { secondaryTextColor } from "@/app/styles/style";
 import { Input, List, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
@@ -25,7 +25,6 @@ const InventoryHomePage = () => {
         }
     }); 
 
-    console.log(`filters`, filters);
     const renderSearchIcon = () => {
         return <Ionicons name="search-outline" />
     } 
@@ -41,7 +40,7 @@ const InventoryHomePage = () => {
     const renderItem = ({item} : { item: Item}) => {
         return (
             <View style={styles.card}>
-                <Text style={{color: '#777'}}>0019201092</Text>
+                <Text style={{color: '#777'}}>{ item.barcode }</Text>
                 <Text style={style.itemTitle}>{ item.name }</Text>
                 <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
                     <View style={{}}>
@@ -69,6 +68,8 @@ const InventoryHomePage = () => {
             </View>
         )
     }
+
+    console.log(`error`, error);
 
     const searchHandler = (value: string) => {
         setFilter('query', value);
@@ -98,36 +99,42 @@ const InventoryHomePage = () => {
                 </View>
                 
             </View>
-            <View style={{flexWrap: 'wrap', display:'flex', flexDirection:'row', gap: 10, marginBlock: 10}}>
-                {
-                    filters?.categories?.map((category) => (
-                        <TouchableOpacity
-                            key={`category-${category.id}`} 
-                            onPress={() => removeFilter(ObjectFilterEnum.CATEGORIES, category.id)}>
-                            <View 
-                                style={style.filterLabel}>
-                                    <Text>{category?.name?.toString()}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))
-                }
-                {
-                    filters?.suppliers?.map((supplier) => (
-                        <TouchableOpacity 
-                            key={`supplier-${supplier.id}`} 
-                            onPress={() => removeFilter(ObjectFilterEnum.SUPPLIERS, supplier.id)}
-                            >
-                            <View 
-                                style={style.filterLabel}>
-                                    <Text>{supplier?.name?.toString()}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))
-                }
-            </View>
+            {
+                filters.categories.length || filters.suppliers.length ? (
+                    <View style={style.filterContainer}>
+                        {
+                            filters?.categories?.map((category) => (
+                                <TouchableOpacity
+                                    key={`category-${category.id}`} 
+                                    onPress={() => removeFilter(ObjectFilterEnum.CATEGORIES, category.id)}>
+                                    <View 
+                                        style={style.filterLabel}>
+                                            <Text>{category?.name?.toString()}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))
+                        }
+                        {
+                            filters?.suppliers?.map((supplier) => (
+                                <TouchableOpacity 
+                                    key={`supplier-${supplier.id}`} 
+                                    onPress={() => removeFilter(ObjectFilterEnum.SUPPLIERS, supplier.id)}
+                                    >
+                                    <View 
+                                        style={style.filterLabel}>
+                                            <Text>{supplier?.name?.toString()}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))
+                        }
+                    </View>
+                ) : null
+                
+            }
+            <Text category="s1" style={{marginBottom: 10, color: "#777"}}>Total { data?.items?.count } Items</Text>
             <List
                 style={{backgroundColor: 'transparent'}}
-                data={data?.items}
+                data={data?.items?.data}
                 renderItem={renderItem}
             />
         </View>
@@ -180,7 +187,8 @@ const style = StyleSheet.create({
     filterWrapper: {
         flexDirection: 'row',
         display: 'flex',
-        gap: 5
+        gap: 5,
+        marginBottom: 10
     },
     filterLeft: {
         width:'auto', 
@@ -203,7 +211,14 @@ const style = StyleSheet.create({
         backgroundColor: '#ccc', 
         width:'auto', 
         padding: 10, 
-        borderRadius:5
+        borderRadius:5,
+    },
+    filterContainer: {
+        flexWrap: 'wrap', 
+        display:'flex', 
+        flexDirection:'row', 
+        gap: 10,
+        marginBottom: 10
     }
 });
 
