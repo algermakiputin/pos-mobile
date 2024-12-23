@@ -38,8 +38,8 @@ const Sales = () => {
     const dropdownData = [{title: 'Today'}, {title: 'Yesterday'}, {title: 'This Month'}, {title: 'Last Month'}];
   
     return (
-        <View style={{flex: 1, flexDirection: 'column'}}>
-            <View style={{paddingLeft: 20, paddingRight: 20, marginBottom: 15, marginTop: 15, borderRadius: 10}}>
+        <View style={style.container}>
+            <View style={style.statisticWrapper}>
                 <View style={[style.statisticsContainer]}>
                     <View style={[style.statisticHeader, { width: width - 60 }]}>
                         <Layout style={[style.flexContainer, {marginBottom: 10}]}>
@@ -71,7 +71,7 @@ const Sales = () => {
                     </ScrollView>
                 </View> 
             </View>
-            <View style={[{paddingLeft: 20, paddingRight: 20, flex: 1, height: '100%', marginBottom: 65}]}>
+            <View style={style.transactionsContainer}>
                 <Layout style={{borderRadius: 10}}>
                     <Text style={[styles.sectionHeader, {paddingLeft: 15,paddingTop:15}]}>Recent Transaction</Text>
                     <Divider/>
@@ -88,6 +88,10 @@ const Sales = () => {
 }
 
 const style = StyleSheet.create({
+    container: {
+        flex: 1, 
+        flexDirection: 'column'
+    },
     amountLabel: {
         fontSize: 20,
         fontWeight: 700
@@ -137,6 +141,20 @@ const style = StyleSheet.create({
         flex:1,
         height: 300,
         backgroundColor: 'red'
+    },
+    statisticWrapper: {
+        paddingLeft: 20, 
+        paddingRight: 20, 
+        marginBottom: 15, 
+        marginTop: 15, 
+        borderRadius: 10
+    },
+    transactionsContainer: {
+        paddingLeft: 20, 
+        paddingRight: 20, 
+        flex: 1, 
+        height: '100%', 
+        marginBottom: 65
     }
 });
 
