@@ -2,10 +2,10 @@ import { View, TextInput, ScrollView, Button, Text, TouchableOpacity, StyleSheet
 import styles, { blackLightShade } from '../../styles/style';
 import { useForm, Controller } from "react-hook-form";
 import { SelectList } from "react-native-dropdown-select-list";
-import { GET_ITEM } from "@/app/src/item-queries";
+import { GET_ITEM, UPDATE_ITEM } from "@/app/src/item-queries";
 import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
@@ -20,7 +20,7 @@ type FormInput = {
     supplier_id: string;
     capital: string;
     price: string;
-    stocks: number;
+    stocks: string;
     image: string;
     id: string;
 }
@@ -33,21 +33,40 @@ const formInputDefaultValue = {
     supplier_id: '',
     capital: '',
     price: '',
-    stocks: 0,
+    stocks: '',
     image: '',
-    id: ''
+    id: '',
 }
 
 const EditItem = () => {
-    const { control, handleSubmit, formState: {errors} } = useForm();
     const [image, setImage] = useState('');
-    const [formValues, setFormValues] = useState<FormInput>();
+    const [formValues, setFormValues] = useState<FormInput>(formInputDefaultValue);
     const params = useLocalSearchParams();
     const { data: itemData } = useQuery(GET_ITEM, {
         variables: {
             id: params.id
         }
     });
+    const [ updateItem, { error: updateError } ] = useMutation(UPDATE_ITEM, {
+        variables: {
+            editItemInput: {
+                barcode: formValues.barcode,
+                name: formValues.name,
+                description: formValues.description,
+                category_id: formValues.category_id,
+                supplier_id: formValues.supplier_id,
+                capital: formValues.capital,
+                price: formValues.price,
+                stocks: Number(formValues.stocks),
+                image: formValues.image,
+                id: formValues.id,
+            }
+        }
+    })
+
+    const { control, handleSubmit, formState: {errors}, reset } = useForm();
+
+    console.log(`errorsqwe`, errors)
 
     const { data: categoriesData } = useQuery(GET_CATEGORIES);
     const { data: supplierData } = useQuery(GET_SUPPLIER);
@@ -65,11 +84,11 @@ const EditItem = () => {
             key: value?.id
         }))
     }, [supplierData]);
-    
-    const submitHandler = (data: any) => {
-        console.log(`data`, data);
+
+    const submitHandler = async () => {
+        await updateItem();
     }
-    
+    console.log(`error`, updateError)
     const handleChoosePhoto = async () => {
         setImage('');
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -95,9 +114,19 @@ const EditItem = () => {
     }
 
     useEffect(() => {
-        inputChangeHandler('id', itemData?.item?.id)
+        inputChangeHandler('id', itemData?.item?.id);
+        setFormValues(itemData?.item);
+        reset(itemData?.item);
     }, [itemData]);
 
+    const mapSupplier = (field: string, value: string) => {
+        return suppliersSelectData?.find((supplier: any) => supplier[field] = value);
+    }
+
+    const mapCategory = (field: string, value: string) => {
+        return categoriesSelectData?.find((category: any) => category[field] = value);
+    }
+  
     return (
         <ScrollView>
             <View style={[styles.container]}>
@@ -116,8 +145,29 @@ const EditItem = () => {
                     </View>
                 </TouchableOpacity>
                 <View style={styles.card}>
+                <Controller 
+                        name="name"
+                        control={control}
+                        render={({field: {onChange, value, onBlur}}) => ( 
+                            <View style={styles.formGroup}>
+                                <TextInput 
+                                    placeholder="Barcode" 
+                                    style={styles.input}
+                                    onBlur={onBlur}
+                                    value={ formValues?.barcode }
+                                    defaultValue={ itemData?.item?.barcode }
+                                    onChangeText={value => {
+                                        inputChangeHandler('barcode', value);
+                                        onChange(value)
+                                    }}
+                                />
+                                { ((errors as any)?.barcode?.message && !formValues?.barcode) && <Text style={styles.textDanger}>{(errors as any)?.barcode?.message}</Text>}
+                            </View> 
+                        )}
+                        rules={{required: 'Barcode is required'}}
+                    />
                     <Controller 
-                        name="itemName"
+                        name="name"
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => ( 
                             <View style={styles.formGroup}>
@@ -125,11 +175,14 @@ const EditItem = () => {
                                     placeholder="Item Name" 
                                     style={styles.input}
                                     onBlur={onBlur}
-                                    value={value}
-                                    defaultValue={itemData?.item?.name}
-                                    onChangeText={value => inputChangeHandler('name', value)}
+                                    value={ formValues?.name }
+                                    defaultValue={ itemData?.item?.name }
+                                    onChangeText={value => {
+                                        inputChangeHandler('name', value);
+                                        onChange(value)
+                                    }}
                                 />
-                                { (errors as any)?.itemName?.message && <Text style={styles.textDanger}>{(errors as any)?.itemName?.message}</Text>}
+                                { ((errors as any)?.name?.message && !formValues?.name) && <Text style={styles.textDanger}>{(errors as any)?.name?.message}</Text>}
                             </View> 
                         )}
                         rules={{required: 'Item Name is required'}}
@@ -143,46 +196,56 @@ const EditItem = () => {
                                     placeholder="Description" 
                                     style={styles.input}
                                     onBlur={onBlur}
-                                    value={value}
-                                    defaultValue={itemData?.item?.description}
-                                    onChangeText={value => inputChangeHandler('description', value)}
+                                    value={ formValues?.description}
+                                    defaultValue={ itemData?.item?.description }
+                                    onChangeText={value => {
+                                        onChange(value);
+                                        inputChangeHandler('description', value)
+                                    }}
                                 />
-                                { (errors as any)?.description?.message && <Text style={styles.textDanger}>{(errors as any)?.description?.message}</Text>}
+                                { ((errors as any)?.description?.message && !formValues?.description) && <Text style={styles.textDanger}>{(errors as any)?.description?.message}</Text>}
                             </View>
                         )}
                         rules={{required: 'Description is required'}}
                     />
                     <Controller 
-                        name="category"
+                        name="category_id"
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
                                 <SelectList 
-                                    setSelected={(val: string) => inputChangeHandler('category', value)}
+                                    setSelected={(val: string) => {
+                                        inputChangeHandler('category', mapCategory('value', val)?.key);
+                                        onChange(value);
+                                    }}
                                     data={categoriesSelectData}
                                     save="value"
                                     boxStyles={styles.input}
                                     placeholder="Select Category"
-                                    defaultOption={{key: '', value: ''}}
+                                    defaultOption={{key: Number(itemData?.item?.category_id), value: mapCategory('key', itemData?.item?.category_id)?.value }}
                                 />
-                                { (errors as any)?.category?.message && <Text style={styles.textDanger}>{(errors as any)?.category?.message}</Text>}
+                                { ((errors as any)?.category_id?.message && !formValues?.category_id) && <Text style={styles.textDanger}>{(errors as any)?.category?.message}</Text>}
                             </View>
                         )}
                         rules={{required: 'Category is required'}}
                     />
                     <Controller 
-                        name="supplier"
+                        name="supplier_id"
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
                                 <SelectList 
-                                    setSelected={(val: string) => inputChangeHandler('supplier', val)}
+                                    setSelected={(val: string, key: string) => {
+                                        onChange(val);
+                                        inputChangeHandler('supplier', mapSupplier('value', val)?.key);
+                                    }}
                                     data={suppliersSelectData}
                                     save="value"
                                     boxStyles={styles.input}
                                     placeholder="Select Supplier"
+                                    defaultOption={{key: Number(itemData?.item?.supplier_id), value: mapSupplier('key', itemData?.item?.supplier_id)?.value }}
                                 />
-                                { (errors as any)?.supplier?.message && <Text style={styles.textDanger}>{(errors as any)?.supplier?.message}</Text>}
+                                { ((errors as any)?.supplier_id?.message && !formValues?.supplier_id) && <Text style={styles.textDanger}>{(errors as any)?.supplier_id?.message}</Text>}
                             </View>
                         )}
                         rules={{required: 'Supplier is required'}}
@@ -197,14 +260,14 @@ const EditItem = () => {
                                         placeholder="Capital" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
-                                        defaultValue={String(itemData?.item?.capital)}
+                                        value={ formValues?.capital }
+                                        defaultValue={ String(itemData?.item?.capital) }
                                         onChangeText={value => {
                                             inputChangeHandler('capital', value)
                                             onChange(value)
                                         }}
                                     />
-                                    { (errors as any)?.capital?.message && <Text style={styles.textDanger}>{(errors as any)?.capital?.message}</Text>}
+                                    { ( (errors as any)?.capital?.message && !formValues?.capital ) && <Text style={styles.textDanger}>{(errors as any)?.capital?.message}</Text>}
                                 </View>
                             )}
                             rules={{required: 'Capital is required'}}
@@ -218,14 +281,14 @@ const EditItem = () => {
                                         placeholder="Retail Price" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
-                                        defaultValue={String(itemData?.item?.price)}
+                                        value={ formValues?.price }
+                                        defaultValue={ String(itemData?.item?.price) }
                                         onChangeText={value => {
                                             inputChangeHandler('price', value)
                                             onChange(value);
                                         }}
                                     />
-                                    { (errors as any)?.price?.message && <Text style={styles.textDanger}>{(errors as any)?.price?.message}</Text>}
+                                    { ( ((errors as any)?.price?.message) && !formValues?.price ) && <Text style={styles.textDanger}>{(errors as any)?.price?.message}</Text>}
                                 </View>
                             )}
                             rules={{required: 'Price is required'}}
@@ -240,14 +303,14 @@ const EditItem = () => {
                                     placeholder="Stocks" 
                                     style={styles.input}
                                     onBlur={onBlur}
-                                    value={value}
-                                    defaultValue={String(itemData?.item?.stocks)}
+                                    value={ formValues?.stocks }
+                                    defaultValue={String(itemData?.item?.stocks || '')}
                                     onChangeText={value => {
                                         inputChangeHandler('stocks', value)
                                         onChange(value)
                                     }}
                                 />
-                                { (errors as any)?.capital?.message && <Text style={styles.textDanger}>{(errors as any)?.capital?.message}</Text>}
+                                { ((errors as any)?.stocks?.message && !formValues?.stocks) && <Text style={styles.textDanger}>{(errors as any)?.stocks?.message}</Text>}
                             </View>
                         )}
                         rules={{required: 'Capital is required'}}

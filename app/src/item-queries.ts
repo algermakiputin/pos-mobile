@@ -41,10 +41,18 @@ export const GET_ITEM = gql`
             supplierName
             barcode
             capital
+            supplier_id
+            category_id
         }
     }
 `;
 
 export const UPDATE_ITEM = gql`
-    
+    mutation UpdateItem($editItemInput: EditItemInput) {
+        updateItem(editItemInput: $editItemInput) {
+            success
+            message
+            data
+        }
+    }
 `;
