@@ -39,10 +39,10 @@ const formInputDefaultValue = {
 const NewItem = () => {
     const { control, handleSubmit, formState: {errors} } = useForm();
     const [image, setImage] = useState('');
-    
+    const [formValues, setFormValues] = useState<FormInput>();
     const { loading: categoryLoading, error: categoryError, data: categoriesData } = useQuery(GET_CATEGORIES);
     const { loading: supplierLoading, error: supplierError, data: supplierData } = useQuery(GET_SUPPLIER);
-    const [formValues, setFormValues] = useState<FormInput>();
+    
     const supplierSelectData = useMemo(() => {
         return supplierData?.suppliers?.map((supplier: any) => ({
             key: supplier.id,

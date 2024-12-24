@@ -44,3 +44,7 @@ export const GET_ITEM = gql`
         }
     }
 `;
+
+export const UPDATE_ITEM = gql`
+    
+`;
