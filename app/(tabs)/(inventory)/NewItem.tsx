@@ -10,13 +10,39 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { STORE_ITEM } from "@/app/src/item-queries";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type FormInput = {
+    barcode: string;
+    name: string;
+    description: string;
+    category_id: string;
+    supplier_id: string;
+    capital: string;
+    price: string;
+    stocks: number;
+    image: string;
+}
+
+const formInputDefaultValue = {
+    barcode: '',
+    name: '',
+    description: '',
+    category_id: '',
+    supplier_id: '',
+    capital: '',
+    price: '',
+    stocks: 0,
+    image: ''
+}
 
 const NewItem = () => {
     const { control, handleSubmit, formState: {errors} } = useForm();
     const [image, setImage] = useState('');
+    
     const { loading: categoryLoading, error: categoryError, data: categoriesData } = useQuery(GET_CATEGORIES);
     const { loading: supplierLoading, error: supplierError, data: supplierData } = useQuery(GET_SUPPLIER);
-    const [formValues, setFormValues] = useState();
+    const [formValues, setFormValues] = useState<FormInput>();
     const supplierSelectData = useMemo(() => {
         return supplierData?.suppliers?.map((supplier: any) => ({
             key: supplier.id,
@@ -32,6 +58,7 @@ const NewItem = () => {
     }, [supplierData]);
 
     const handleChoosePhoto = async () => {
+        setImage('');
         let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [5, 5],
@@ -41,8 +68,31 @@ const NewItem = () => {
         if (!result.canceled) {
             setImage(result?.assets?.[0]?.uri);
         }
-        if (result?.assets?.[0]?.uri) setImage(result?.assets?.[0]?.uri);
+        if (result?.assets?.[0]?.uri) {
+            setImage(result?.assets?.[0]?.uri);
+            inputChangeHandler('image', result?.assets?.[0]?.uri);
+        };
     };
+    
+    const storeImage = (key: string, value: any) => {
+        if (!value) return false;
+        try {
+            AsyncStorage.setItem(key, value);
+        } catch(e) {
+            console.log(`error`, e);
+        }
+    }
+    
+    const getImage = async () => {
+        try {
+            const itemImage = await AsyncStorage.getItem("algertest");
+            if (itemImage) {
+                setImage(itemImage);
+            }
+        } catch (error) {
+            console.log(`error`, error);
+        }
+    }
 
     const [storeItem, {error, loading}] = useMutation(STORE_ITEM, {
         variables: {
@@ -51,13 +101,16 @@ const NewItem = () => {
     })
 
     const submitHandler = async (data: any) => {
+        storeImage(String(formValues?.barcode), image);
         const store = await storeItem();
         console.log(`store`, store);
+        if (store?.data?.storeItem?.success) {
+            alert("Added Successfully");
+            setFormValues(formInputDefaultValue);
+        }
     }
 
-    console.log(`error`, error);
-
-    const inputChangeHandler = (key: string, value: string) => {
+    const inputChangeHandler = (key: string, value: string | number) => {
         setFormValues((prevState: any) => ({
             ...prevState,
             [key]: value
@@ -114,7 +167,7 @@ const NewItem = () => {
                                         placeholder="Item Name" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
+                                        value={formValues?.name}
                                         onChangeText={value => {
                                             onChange(value);
                                             inputChangeHandler('name', value)
@@ -136,7 +189,7 @@ const NewItem = () => {
                                         placeholder="Description" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
+                                        value={formValues?.description}
                                         onChangeText={value => { 
                                             inputChangeHandler('description', value);
                                             onChange(value);
@@ -156,7 +209,7 @@ const NewItem = () => {
                                 <SelectList 
                                     setSelected={(val: string) => {
                                         var id = categoriesSelectData?.find((category:Select) => category.value == val)?.key;
-                                        inputChangeHandler('categoryId', id)
+                                        inputChangeHandler('category_id', id)
                                         onChange(id);
                                     }}
                                     data={categoriesSelectData}
@@ -177,7 +230,7 @@ const NewItem = () => {
                                 <SelectList 
                                     setSelected={(val: string) => {
                                         var id = supplierSelectData?.find((supplier:Select) => supplier.value == val)?.key;
-                                        inputChangeHandler('supplierId', id)
+                                        inputChangeHandler('supplier_id', id)
                                         onChange(id);
                                     }}
                                     data={supplierSelectData}
@@ -200,7 +253,7 @@ const NewItem = () => {
                                         placeholder="Capital" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
+                                        value={formValues?.capital}
                                         onChangeText={value => {
                                             inputChangeHandler('capital', value)
                                             onChange(value)
@@ -220,7 +273,7 @@ const NewItem = () => {
                                         placeholder="Retail Price" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
+                                        value={formValues?.price}
                                         onChangeText={value => {
                                             inputChangeHandler('price', value);
                                             onChange(value);
@@ -242,9 +295,9 @@ const NewItem = () => {
                                         placeholder="Stocks" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={value}
+                                        value={String(formValues?.stocks)}
                                         onChangeText={value => { 
-                                            inputChangeHandler('stocks', value);
+                                            inputChangeHandler('stocks', Number(value));
                                             onChange(value);
                                         }}
                                     />

@@ -59,7 +59,7 @@ const InventoryHomePage = () => {
                     </MenuTrigger>
                     <MenuOptions>
                         <MenuOption onSelect={() => alert(`Save`)} text='View' />
-                        <MenuOption onSelect={() => router.navigate({pathname: routes.editItem as any})}  text="Edit"/>
+                        <MenuOption onSelect={() => router.navigate({pathname: routes.editItem as any, params: { id: item.id }})}  text="Edit"/>
                         <MenuOption onSelect={() => alert(`Delete`)} >
                             <Text style={{color: 'red'}}>Delete</Text>
                         </MenuOption>

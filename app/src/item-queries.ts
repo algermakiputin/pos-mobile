@@ -20,7 +20,27 @@ export const GET_ITEMS = gql`
 `;
 
 export const STORE_ITEM = gql`
-    mutation StoreItem($item: ItemInput!) {
-        storeItem(item: $item)
+    mutation Mutation($item: ItemInput!) {
+        storeItem(item: $item) {
+            success
+            message
+            data
+        }
+    }
+`;
+
+export const GET_ITEM = gql`
+    query Item($id: ID) {
+        item(id: $id) {
+            id
+            name
+            description
+            price
+            stocks
+            categoryName
+            supplierName
+            barcode
+            capital
+        }
     }
 `;
