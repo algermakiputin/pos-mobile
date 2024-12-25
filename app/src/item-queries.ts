@@ -56,3 +56,13 @@ export const UPDATE_ITEM = gql`
         }
     }
 `;
+
+export const DESTROY_ITEM = gql`
+    mutation DestroyItem($id: ID!) {
+        destroyItem(id: $id) {
+            success
+            message
+            data
+        }
+    }
+`;

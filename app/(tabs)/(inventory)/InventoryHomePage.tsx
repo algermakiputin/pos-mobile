@@ -1,29 +1,31 @@
 import { useRouter } from "expo-router";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import styles, { secondaryTextColor } from "@/app/styles/style";
+import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import styles from "@/app/styles/style";
 import { Input, List, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
 import { routes } from "@/app/types/routes";
-import { GET_ITEMS } from "@/app/src/item-queries";
-import { useQuery } from "@apollo/client";
+import { GET_ITEMS, DESTROY_ITEM } from "@/app/src/item-queries";
+import { useMutation, useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
+import BasicLoader from "@/components/Loader/BasicLoader";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
     const { ContextMenu } = renderers;
     const { filters, setFilter, removeFilter } = useContext(InventoryContext);
-    const { loading, error, data } = useQuery(GET_ITEMS, {
+    const { loading, error, data, refetch } = useQuery(GET_ITEMS, {
         variables: {
             filter: {
                 query: filters.query,
                 categories: filters.categories?.map(category => category?.id),
                 suppliers: filters.suppliers?.map(supplier => supplier.id)
             }
-        }
+        },
     }); 
+    const [destroyItem] = useMutation(DESTROY_ITEM);
 
     const renderSearchIcon = () => {
         return <Ionicons name="search-outline" />
@@ -36,6 +38,35 @@ const InventoryHomePage = () => {
     const newButtonHandler = () => {
         router.navigate({pathname: routes.newItem} as any);
     }
+
+    const deleteHandler = async (id: string) => {
+        const deleteItem = await destroyItem({ variables: { id }}).then(() => refetch());
+    }
+
+    const showAlert = (id: string) =>
+        Alert.alert(
+            'Are you sure you want to delete that Item?',
+            'That item will be permanently deleted',
+            [
+                {
+                    text: 'Confirm',
+                    onPress: () => deleteHandler(id),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Cancel',
+                    onPress: () => Alert.alert('Cancel Pressed'),
+                    style: 'cancel',
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () =>
+                    Alert.alert(
+                    'This alert was dismissed by tapping outside of the alert dialog.',
+                ),
+            },
+        );
 
     const renderItem = ({item} : { item: Item}) => {
         return (
@@ -60,7 +91,7 @@ const InventoryHomePage = () => {
                     <MenuOptions>
                         <MenuOption onSelect={() => alert(`Save`)} text='View' />
                         <MenuOption onSelect={() => router.navigate({pathname: routes.editItem as any, params: { id: item.id }})}  text="Edit"/>
-                        <MenuOption onSelect={() => alert(`Delete`)} >
+                        <MenuOption onSelect={() => showAlert(item.id)} >
                             <Text style={{color: 'red'}}>Delete</Text>
                         </MenuOption>
                     </MenuOptions>
@@ -69,14 +100,11 @@ const InventoryHomePage = () => {
         )
     }
 
-    console.log(`error`, error);
-
     const searchHandler = (value: string) => {
         setFilter('query', value);
     } 
   
-    if (error) return <View><Text>Error</Text></View>
-
+    if (error) return <View><Text>Error</Text></View>;
     return ( 
         <View style={styles.container}>
             <View style={style.filterWrapper}>
@@ -97,7 +125,6 @@ const InventoryHomePage = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
-                
             </View>
             {
                 filters.categories.length || filters.suppliers.length ? (
@@ -132,11 +159,20 @@ const InventoryHomePage = () => {
                 
             }
             <Text category="s1" style={{marginBottom: 10, color: "#777"}}>Total { data?.items?.count } Items</Text>
+            {/* {
+                loading ? <BasicLoader /> : (
+                    <List
+                        style={{backgroundColor: 'transparent'}}
+                        data={data?.items?.data}
+                        renderItem={renderItem}
+                    />
+                )
+            } */}
             <List
-                style={{backgroundColor: 'transparent'}}
-                data={data?.items?.data}
-                renderItem={renderItem}
-            />
+                        style={{backgroundColor: 'transparent'}}
+                        data={data?.items?.data}
+                        renderItem={renderItem}
+                    />
         </View>
     );
 }

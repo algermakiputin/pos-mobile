@@ -7,10 +7,11 @@ import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { useQuery } from "@apollo/client";
 import InventoryContext from "./context/InventoryContext";
 import { ObjectValue } from "./context/InventoryContext";
+import BasicLoader from "@/components/Loader/BasicLoader";
 
 const ItemFilter = () => {
-    const { data: categoriesData } = useQuery(GET_CATEGORIES);
-    const { data: suppliersData } = useQuery(GET_SUPPLIER);
+    const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES);
+    const { data: suppliersData, loading: supplierLoading } = useQuery(GET_SUPPLIER);
     const { selectedCategory, setSelectedCategory, selectedSupplier, setSelectedSupplier } = useContext(InventoryContext);
     const categories = useMemo(function() {
         return categoriesData?.categories.map((category: any) => ({
@@ -25,7 +26,7 @@ const ItemFilter = () => {
             name: supplier.name
         }))
     }, [categoriesData]);
-
+ 
     const categoryFilterSelectHandler = (category: ObjectValue) => {
         if (!selectedCategory?.some(value => value?.id == category.id)) {
             setSelectedCategory((prevState) => ([...prevState, category]));
@@ -50,6 +51,7 @@ const ItemFilter = () => {
         return selectedSupplier?.some((value: any) => value?.id == supplier);
     }
 
+    if (categoriesLoading || supplierLoading) return <BasicLoader />
     return ( 
         <View style={localStyle.container}>
             <ScrollView>

@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
 import { Layout } from "@ui-kitten/components";
+import BasicLoader from "@/components/Loader/BasicLoader";
 
 type FormInput = {
     barcode: string;
@@ -42,7 +43,7 @@ const EditItem = () => {
     const [image, setImage] = useState('');
     const [formValues, setFormValues] = useState<FormInput>(formInputDefaultValue);
     const params = useLocalSearchParams();
-    const { data: itemData } = useQuery(GET_ITEM, {
+    const { data: itemData, loading: itemLoading } = useQuery(GET_ITEM, {
         variables: {
             id: params.id
         }
@@ -50,26 +51,23 @@ const EditItem = () => {
     const [ updateItem, { error: updateError } ] = useMutation(UPDATE_ITEM, {
         variables: {
             editItemInput: {
-                barcode: formValues.barcode,
-                name: formValues.name,
-                description: formValues.description,
-                category_id: formValues.category_id,
-                supplier_id: formValues.supplier_id,
-                capital: formValues.capital,
-                price: formValues.price,
-                stocks: Number(formValues.stocks),
-                image: formValues.image,
-                id: formValues.id,
+                barcode: formValues?.barcode,
+                name: formValues?.name,
+                description: formValues?.description,
+                category_id: formValues?.category_id,
+                supplier_id: formValues?.supplier_id,
+                capital: formValues?.capital,
+                price: formValues?.price,
+                stocks: Number(formValues?.stocks),
+                image: formValues?.image,
+                id: formValues?.id,
             }
         }
     })
 
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
-
-    console.log(`errorsqwe`, errors)
-
-    const { data: categoriesData } = useQuery(GET_CATEGORIES);
-    const { data: supplierData } = useQuery(GET_SUPPLIER);
+    const { data: categoriesData, loading: categoryLoading } = useQuery(GET_CATEGORIES);
+    const { data: supplierData, loading: supplierLoading } = useQuery(GET_SUPPLIER);
  
     const categoriesSelectData = useMemo(() => {
         return categoriesData?.categories?.map((value: any) => ({
@@ -86,9 +84,12 @@ const EditItem = () => {
     }, [supplierData]);
 
     const submitHandler = async () => {
-        await updateItem();
+        const submit = await updateItem();
+        if (submit?.data?.updateItem?.success) {
+            alert("Item updated successfully");
+        }
     }
-    console.log(`error`, updateError)
+
     const handleChoosePhoto = async () => {
         setImage('');
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -113,6 +114,10 @@ const EditItem = () => {
         }))
     }
 
+    const Loading = () => {
+        return null;
+    }
+
     useEffect(() => {
         inputChangeHandler('id', itemData?.item?.id);
         setFormValues(itemData?.item);
@@ -126,7 +131,9 @@ const EditItem = () => {
     const mapCategory = (field: string, value: string) => {
         return categoriesSelectData?.find((category: any) => category[field] = value);
     }
-  
+
+    if (itemLoading || categoryLoading || supplierLoading) return <BasicLoader />;
+    
     return (
         <ScrollView>
             <View style={[styles.container]}>
