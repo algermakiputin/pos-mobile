@@ -26,7 +26,7 @@ export default function InventoryLayout() {
     }));
   }
 
-  const removeFilter = (filterName: ObjectFilterEnum, id: string) => {
+  const removeFilter = (filterName: ObjectFilterEnum, id: String) => {
     const newFilterValue = filter[filterName]?.filter((category: ObjectValue) => category.id != id);
     filterHandler(filterName, newFilterValue);
   }

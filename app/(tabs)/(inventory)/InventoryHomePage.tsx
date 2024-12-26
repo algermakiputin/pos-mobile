@@ -159,20 +159,11 @@ const InventoryHomePage = () => {
                 
             }
             <Text category="s1" style={{marginBottom: 10, color: "#777"}}>Total { data?.items?.count } Items</Text>
-            {/* {
-                loading ? <BasicLoader /> : (
-                    <List
-                        style={{backgroundColor: 'transparent'}}
-                        data={data?.items?.data}
-                        renderItem={renderItem}
-                    />
-                )
-            } */}
             <List
-                        style={{backgroundColor: 'transparent'}}
-                        data={data?.items?.data}
-                        renderItem={renderItem}
-                    />
+                style={{backgroundColor: 'transparent'}}
+                data={data?.items?.data}
+                renderItem={renderItem}
+            />
         </View>
     );
 }
