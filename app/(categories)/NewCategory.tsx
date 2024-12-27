@@ -2,12 +2,13 @@ import { useForm, Controller } from "react-hook-form";
 import styles from "@/app/styles/style";
 import { View, TextInput, Text, StyleSheet } from "react-native";
 import { Button } from "@ui-kitten/components";
-import { STORE_CATEGORY } from "../src/categories-queries";
-import { useMutation } from "@apollo/client";
+import { GET_CATEGORIES, STORE_CATEGORY } from "../src/categories-queries";
+import { useMutation, useQuery } from "@apollo/client";
 
 const NewCategory = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
     const [storeCategory] = useMutation(STORE_CATEGORY);
+    const { refetch } = useQuery(GET_CATEGORIES);
 
     const submitHandler = async (data: any) => {
         const store = await storeCategory({
@@ -18,6 +19,7 @@ const NewCategory = () => {
         if (store?.data?.storeCategory?.success) {
             alert("Category added successfully");
             reset();
+            refetch();
         }
     };
 

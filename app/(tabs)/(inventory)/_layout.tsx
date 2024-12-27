@@ -4,7 +4,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { routes } from '@/app/types/routes';
-import { MenuProvider } from 'react-native-popup-menu';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@ui-kitten/components';
 import InventoryContext, { defaultValue, ObjectFilterEnum, ObjectValue } from './context/InventoryContext';
@@ -58,45 +57,43 @@ export default function InventoryLayout() {
   }
   return (
     <InventoryContext.Provider value={value}>
-      <MenuProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen 
-              name={routes.inventory} 
-              options={{ 
-                headerShown: true,
-                headerTitle: 'Inventory',
-                headerTitleAlign:'center',
-              }} 
-              />
-            <Stack.Screen 
-              name={routes.newItem}
-              options={{ 
-                headerShown: true,
-                headerTitle: 'New Item',
-                headerTitleAlign:'center'
-              }} 
-              /> 
-            <Stack.Screen 
-              name={routes.editItem}
-              options={{ 
-                headerShown: true,
-                headerTitle: 'Edit Item',
-                headerTitleAlign:'center'
-              }} 
-              />
-            <Stack.Screen 
-              name={routes.itemFilter}
-              options={{ 
-                headerShown: true,
-                headerTitle: 'Filter Item',
-                headerTitleAlign:'center',
-                headerRight: filterHeaderRight,
-              }} 
-              />
-          </Stack>
-        </ThemeProvider>
-      </MenuProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen 
+            name={routes.inventory} 
+            options={{ 
+              headerShown: true,
+              headerTitle: 'Inventory',
+              headerTitleAlign:'center',
+            }} 
+            />
+          <Stack.Screen 
+            name={routes.newItem}
+            options={{ 
+              headerShown: true,
+              headerTitle: 'New Item',
+              headerTitleAlign:'center'
+            }} 
+            /> 
+          <Stack.Screen 
+            name={routes.editItem}
+            options={{ 
+              headerShown: true,
+              headerTitle: 'Edit Item',
+              headerTitleAlign:'center'
+            }} 
+            />
+          <Stack.Screen 
+            name={routes.itemFilter}
+            options={{ 
+              headerShown: true,
+              headerTitle: 'Filter Item',
+              headerTitleAlign:'center',
+              headerRight: filterHeaderRight,
+            }} 
+            />
+        </Stack>
+      </ThemeProvider>
     </InventoryContext.Provider>
   );
 }

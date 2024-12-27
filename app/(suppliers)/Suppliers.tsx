@@ -1,58 +1,64 @@
 import { Text, ListItem, List, Divider } from "@ui-kitten/components";
-import { View } from "react-native";
-import styles from "../styles/style";
+import { DESTROY_SUPPLIER, GET_SUPPLIER } from "../src/supplier-queries";
+import { useMutation, useQuery } from "@apollo/client";
+import { useEffect, useMemo } from "react";
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
+import { Ionicons } from "@expo/vector-icons";
 
 interface IListItem {
     title: string;
-    description: string;
-  }
-  
-const data = [
-    {
-        title: "Beverages",
-        description: "Food, drinks"
-    },
-    {
-        title: "Apparel",
-        description: "Food, drinks"
-    },
-    {
-        title: "Arts & Entertainment",
-        description: "Food, drinks"
-    },
-    {
-        title: "Collectibles",
-        description: "Food, drinks"
-    },
-    {
-        title: "Candies",
-        description: "Food, drinks"
-    },
-    {
-        title: "Canned Goods",
-        description: "Food, drinks"
-    },
-    {
-        title: "Soft Drinks",
-        description: "Food, drinks"
-    },
-    {
-        title: "Medicine",
-        description: "Food, drinks"
-    },
-]
+    id: string;
+}
 
 const Suppliers = () => {
+    const { data, refetch } = useQuery(GET_SUPPLIER);
+    const supplierData = useMemo(() => {
+        return data?.suppliers?.map((supplier: any) => ({
+            title: supplier?.name,
+            id: supplier?.id
+        }));
+    }, [data]);
+
+    const [destroySupplier] = useMutation(DESTROY_SUPPLIER);
+
     const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
         <ListItem
             title={() => <Text category="s1">{`${item.title} ${index + 1}`}</Text>}
-            description={() => <Text category="s2">{ `${item.description} ${index + 1}` }</Text>}
+            description={() => <Text category="s2">{ `${item?.id} ${index + 1}` }</Text>}
+            accessoryRight={<RenderMenu item={item} />}
         />
     );
+
+    const destroySupplierHandler = async (id: string) => {
+        await destroySupplier({
+            variables: {
+                id
+            }
+        });
+        await refetch();
+    }
+
+    const RenderMenu = ({item} : { item: IListItem}) => {
+        return (
+            <Menu style={{width:20, position:'absolute', right: 10, bottom:20}}>
+                <MenuTrigger >
+                    <Ionicons name="ellipsis-vertical-outline" size={18} />
+                </MenuTrigger>
+                <MenuOptions>
+                    <MenuOption onSelect={() => alert(`Save`)} text='View' />
+                    <MenuOption onSelect={() => alert('test')}  text="Edit"/>
+                    <MenuOption onSelect={() => destroySupplierHandler(item.id)} >
+                        <Text style={{color: 'red'}}>Delete</Text>
+                    </MenuOption>
+                </MenuOptions>
+            </Menu>
+        )
+    }
+
     return (
         <List
             style={{}}
-            data={data}
+            data={supplierData}
             ItemSeparatorComponent={Divider}
             renderItem={renderItem}
         />

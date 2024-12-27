@@ -57,8 +57,7 @@ const styles = StyleSheet.create({
     },
     formGroup: {
         marginBottom:20,
-        flex: 1,
-        width: '100%'
+        width: '100%',
     },
     input: {
         color: '#8a8a8a',

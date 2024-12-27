@@ -1,11 +1,24 @@
 import { useForm, Controller } from "react-hook-form";
 import styles from "@/app/styles/style";
 import { View, TextInput, Text, TouchableOpacity } from "react-native";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_SUPPLIER, STORE_SUPPLIER } from "../src/supplier-queries";
 
 const NewSupplier = () => {
-    const { control, handleSubmit, formState: {errors} } = useForm();
-    const submitHandler = (data: any) => {
-        console.log(data);
+    const { control, handleSubmit, formState: {errors}, reset } = useForm();
+    const [storeSupplier] = useMutation(STORE_SUPPLIER);
+    const { refetch } = useQuery(GET_SUPPLIER);
+    const submitHandler = async (data: any) => {
+        const store = await storeSupplier({
+            variables: {
+                supplier: data
+            }
+        });
+        if (store?.data?.storeSupplier?.success) {
+            alert("Supplier saved successfully");
+            reset();
+            refetch();
+        }
     };
     return (
         <View style={styles.container}>
@@ -28,12 +41,12 @@ const NewSupplier = () => {
                     rules={{required: 'Category Name is required'}}
                 /> 
                 <Controller
-                    name="description"
+                    name="email"
                     control={control}
                     render={({field: {onChange, value, onBlur}}) => ( 
                         <View style={styles.formGroup}>
                             <TextInput 
-                                placeholder="Category Name" 
+                                placeholder="Email" 
                                 style={styles.input}
                                 onBlur={onBlur}
                                 value={value}
@@ -48,7 +61,7 @@ const NewSupplier = () => {
                     render={({field: {onChange, value, onBlur}}) => ( 
                         <View style={styles.formGroup}>
                             <TextInput 
-                                placeholder="Contact Number" 
+                                placeholder="Phone Number" 
                                 style={styles.input}
                                 onBlur={onBlur}
                                 value={value}

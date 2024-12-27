@@ -9,6 +9,7 @@ import { ApplicationProvider} from '@ui-kitten/components';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ApolloProvider } from '@apollo/client';
 import client from './src/ApolloClient';
+import { MenuProvider } from 'react-native-popup-menu';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -33,12 +34,14 @@ export default function RootLayout() {
     <ApolloProvider client={client}>
       <ApplicationProvider {...eva} theme={eva.light}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(categories)" options={{ headerShown: false}}/>
-            <Stack.Screen name="(suppliers)" options={{ headerShown: false}}/>
-            <Stack.Screen name="+not-found" />
-          </Stack>
+          <MenuProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(categories)" options={{ headerShown: false}}/>
+              <Stack.Screen name="(suppliers)" options={{ headerShown: false}}/>
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </MenuProvider>
         </ThemeProvider>
       </ApplicationProvider>
     </ApolloProvider>

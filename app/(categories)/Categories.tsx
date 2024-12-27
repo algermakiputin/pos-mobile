@@ -21,11 +21,6 @@ const Categories = () => {
         />
     );
 
-    useEffect(() => {
-        console.log(`refetching?`)
-        refetch();
-    }, []);
-
     const categoriesData = useMemo(() => {
         return data?.categories?.map((category: any) => ({
             title: category?.name,
@@ -39,7 +34,6 @@ const Categories = () => {
                 id
             }
         });
-        console.log(`destroy`, destroy);
         if (destroy?.data?.destroyCategory?.success) {
             alert("Category Deleted Successfully");
             refetch();
