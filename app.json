@@ -20,7 +20,6 @@
       },
       "package": "com.anonymous.posmobile"
     },
-    
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -36,7 +35,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

@@ -43,7 +43,7 @@ const Sales = () => {
                     <View style={[style.statisticHeader, { width: width - 60 }]}>
                         <Layout style={[style.flexContainer, {marginBottom: 10}]}>
                             <Layout style={[styles.flex, {justifyContent: 'center'}]}>
-                                <Text style={{fontWeight: 700}}>Statistics</Text>
+                                <Text style={{fontFamily:'Inter_800ExtraBold'}}>Statistics</Text>
                             </Layout>
                             <Layout style={[styles.flex, {alignItems: 'flex-end', justifyContent: 'center'}]} level="1">
                                 <View>
@@ -93,16 +93,15 @@ const style = StyleSheet.create({
     },
     amountLabel: {
         fontSize: 20,
-        fontWeight: 700
+        fontFamily: 'Inter_600SemiBold'
     },
     flexItem: {
         flex: 1,
-    
         flexBasis: 'auto'
     },
     columnLabel: {
         fontSize: 14,
-        fontWeight: 'light',
+        fontFamily: 'Inter_300Light',
         color: secondaryTextColor,
         marginBottom: 5,
     },

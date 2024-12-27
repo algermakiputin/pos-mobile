@@ -32,7 +32,7 @@ export default function HomeScreen() {
         <InventorySummary />
         <QuickMenu />
         <View style={{backgroundColor:'#fff', marginTop:10, paddingBottom: 20,paddingTop:20, borderRadius:10}} onLayout={({nativeEvent}) => setContainerWidth(nativeEvent.layout.width)}>
-          <Text style={{paddingLeft:10}}>Sales Overview</Text> 
+          <Text style={{paddingLeft:10, fontFamily: 'Inter_700Bold', marginBottom: 10}}>Sales Overview</Text> 
           <BarChart 
             nestedScrollEnabled
             scrollAnimation ={true}
@@ -86,6 +86,8 @@ export default function HomeScreen() {
 const localStyles = StyleSheet.create({
   welcomeMessage: {
     marginTop: 10,
-    marginBottom: 20
+    marginBottom: 20,
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 20
   }
 });

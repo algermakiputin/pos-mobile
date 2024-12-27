@@ -1,8 +1,8 @@
-import { View, TextInput, ScrollView, Button, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, TextInput, ScrollView, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import styles, { blackLightShade } from '../../styles/style';
 import { useForm, Controller } from "react-hook-form";
 import { SelectList } from "react-native-dropdown-select-list";
-import { GET_ITEM, UPDATE_ITEM } from "@/app/src/item-queries";
+import { GET_ITEM, GET_ITEMS, UPDATE_ITEM } from "@/app/src/item-queries";
 import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
@@ -10,7 +10,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
-import { Layout } from "@ui-kitten/components";
+import { Layout, Button, Input } from "@ui-kitten/components";
 import BasicLoader from "@/components/Loader/BasicLoader";
 
 type FormInput = {
@@ -48,6 +48,7 @@ const EditItem = () => {
             id: params.id
         }
     });
+    const { refetch } = useQuery(GET_ITEMS);
     const [ updateItem, { error: updateError } ] = useMutation(UPDATE_ITEM, {
         variables: {
             editItemInput: {
@@ -87,6 +88,7 @@ const EditItem = () => {
         const submit = await updateItem();
         if (submit?.data?.updateItem?.success) {
             alert("Item updated successfully");
+            refetch();
         }
     }
 
@@ -136,7 +138,7 @@ const EditItem = () => {
     
     return (
         <ScrollView>
-            <View style={[styles.container]}>
+            <View style={[styles.container, { padding: 0 }]}>
                 <TouchableOpacity onPress={handleChoosePhoto}>
                     <View style={localStyle.itemImageContainer}>
                         { 
@@ -157,16 +159,17 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => ( 
                             <View style={styles.formGroup}>
-                                <TextInput 
-                                    placeholder="Barcode" 
-                                    style={styles.input}
+                                <Input 
+                                    value={formValues.barcode}
+                                    label={"Barcode"}
+                                    placeholder="Barcode"
                                     onBlur={onBlur}
-                                    value={ formValues?.barcode }
-                                    defaultValue={ itemData?.item?.barcode }
+                                    defaultValue={itemData?.item?.barcode}
                                     onChangeText={value => {
                                         inputChangeHandler('barcode', value);
                                         onChange(value)
                                     }}
+                                    style={localStyle.input}
                                 />
                                 { ((errors as any)?.barcode?.message && !formValues?.barcode) && <Text style={styles.textDanger}>{(errors as any)?.barcode?.message}</Text>}
                             </View> 
@@ -178,9 +181,9 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => ( 
                             <View style={styles.formGroup}>
-                                <TextInput 
-                                    placeholder="Item Name" 
-                                    style={styles.input}
+                                <Input 
+                                    label={"Name"}
+                                    placeholder="Item Name"
                                     onBlur={onBlur}
                                     value={ formValues?.name }
                                     defaultValue={ itemData?.item?.name }
@@ -188,6 +191,7 @@ const EditItem = () => {
                                         inputChangeHandler('name', value);
                                         onChange(value)
                                     }}
+                                    style={localStyle.input}
                                 />
                                 { ((errors as any)?.name?.message && !formValues?.name) && <Text style={styles.textDanger}>{(errors as any)?.name?.message}</Text>}
                             </View> 
@@ -199,9 +203,9 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}} ) => (
                             <View style={styles.formGroup}>
-                                <TextInput 
-                                    placeholder="Description" 
-                                    style={styles.input}
+                                <Input 
+                                    label={"Description"}
+                                    placeholder="Description"
                                     onBlur={onBlur}
                                     value={ formValues?.description}
                                     defaultValue={ itemData?.item?.description }
@@ -209,6 +213,7 @@ const EditItem = () => {
                                         onChange(value);
                                         inputChangeHandler('description', value)
                                     }}
+                                    style={localStyle.input}
                                 />
                                 { ((errors as any)?.description?.message && !formValues?.description) && <Text style={styles.textDanger}>{(errors as any)?.description?.message}</Text>}
                             </View>
@@ -220,6 +225,7 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
+                                <Text style={localStyle.inputLabel}>Category</Text>
                                 <SelectList 
                                     setSelected={(val: string) => {
                                         inputChangeHandler('category', mapCategory('value', val)?.key);
@@ -241,6 +247,7 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
+                                <Text style={localStyle.inputLabel}>Supplier</Text>
                                 <SelectList 
                                     setSelected={(val: string, key: string) => {
                                         onChange(val);
@@ -262,10 +269,10 @@ const EditItem = () => {
                             name="capital"
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
-                                <View style={styles.formGroup}>
-                                    <TextInput 
-                                        placeholder="Capital" 
-                                        style={styles.input}
+                                <View style={[styles.formGroup, {flex: 1}]}>
+                                    <Input 
+                                        label={"Capital"}
+                                        placeholder="Capital"
                                         onBlur={onBlur}
                                         value={ formValues?.capital }
                                         defaultValue={ String(itemData?.item?.capital) }
@@ -273,6 +280,7 @@ const EditItem = () => {
                                             inputChangeHandler('capital', value)
                                             onChange(value)
                                         }}
+                                        style={localStyle.input}
                                     />
                                     { ( (errors as any)?.capital?.message && !formValues?.capital ) && <Text style={styles.textDanger}>{(errors as any)?.capital?.message}</Text>}
                                 </View>
@@ -283,11 +291,12 @@ const EditItem = () => {
                             name="price"
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
-                                <View style={styles.formGroup}>
-                                    <TextInput 
-                                        placeholder="Retail Price" 
-                                        style={styles.input}
+                                <View style={[styles.formGroup, { flex: 1}]}>
+                                    <Input 
+                                        label={"Retail Price"}
+                                        placeholder="Retail Price"
                                         onBlur={onBlur}
+                                        style={localStyle.input}
                                         value={ formValues?.price }
                                         defaultValue={ String(itemData?.item?.price) }
                                         onChangeText={value => {
@@ -306,10 +315,11 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
-                                <TextInput 
+                                <Input 
+                                    label={"Stocks"}
                                     placeholder="Stocks" 
-                                    style={styles.input}
                                     onBlur={onBlur}
+                                    style={localStyle.input}
                                     value={ formValues?.stocks }
                                     defaultValue={String(itemData?.item?.stocks || '')}
                                     onChangeText={value => {
@@ -322,7 +332,7 @@ const EditItem = () => {
                         )}
                         rules={{required: 'Capital is required'}}
                     />
-                    <Button title="Save Product" onPress={handleSubmit(submitHandler)} />
+                    <Button onPress={handleSubmit(submitHandler)}>Update Product</Button>
                 </View>
             </View>
         </ScrollView>
@@ -340,6 +350,15 @@ const localStyle = StyleSheet.create({
         flex:1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    input: {
+        backgroundColor: '#fff'
+    },
+    inputLabel: {
+        fontSize: 12, 
+        color:'#8F9BB3', 
+        marginBottom: 4, 
+        fontWeight: 800
     }
 })
 

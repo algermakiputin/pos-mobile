@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import styles from "@/app/styles/style";
+import styles, { bodyColor } from "@/app/styles/style";
 import { Input, List, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
@@ -8,9 +8,10 @@ import { routes } from "@/app/types/routes";
 import { GET_ITEMS, DESTROY_ITEM } from "@/app/src/item-queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
 import BasicLoader from "@/components/Loader/BasicLoader";
+import { formatAmount } from "@/app/utils/utils";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
@@ -40,7 +41,8 @@ const InventoryHomePage = () => {
     }
 
     const deleteHandler = async (id: string) => {
-        const deleteItem = await destroyItem({ variables: { id }}).then(() => refetch());
+        const destroy = await destroyItem({ variables: { id }});
+        refetch();
     }
 
     const showAlert = (id: string) =>
@@ -75,13 +77,15 @@ const InventoryHomePage = () => {
                 <Text style={style.itemTitle}>{ item.name }</Text>
                 <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
                     <View style={{}}>
-                        <View style={style.itemAvatar}></View> 
+                        <View style={style.itemAvatar}>
+                            <Ionicons name="image-outline" size={28} color={"#ccc"}/>
+                        </View> 
                     </View>
                     <View style={[style.productDetailsColumn]}>
                         <Text category="s2">Stocks: <Text category="s1">{item.stocks}</Text></Text>
                         <Text category="s2">Supplier: <Text category="s1">{item.supplierName}</Text></Text>
                         <Text category="s2">Category: <Text category="s1">{item.categoryName}</Text></Text>
-                        <Text category="s1" style={style.price}>{ item.price }</Text>
+                        <Text category="s1" style={style.price}>{ formatAmount(Number(item.price)) }</Text>
                     </View> 
                 </View> 
                 <Menu renderer={ContextMenu} style={{width:20, position:'absolute', right: 10, bottom:20}}>
@@ -135,8 +139,11 @@ const InventoryHomePage = () => {
                                     key={`category-${category.id}`} 
                                     onPress={() => removeFilter(ObjectFilterEnum.CATEGORIES, category.id)}>
                                     <View 
-                                        style={style.filterLabel}>
-                                            <Text>{category?.name?.toString()}</Text>
+                                        style={[style.filterLabel]}>
+                                            <Text style={style.filterText}>{category?.name?.toString()}</Text>
+                                            <View style={style.filterCloseIcon}>
+                                                <Ionicons name="close-outline" size={10}/>
+                                            </View>
                                     </View>
                                 </TouchableOpacity>
                             ))
@@ -149,7 +156,10 @@ const InventoryHomePage = () => {
                                     >
                                     <View 
                                         style={style.filterLabel}>
-                                            <Text>{supplier?.name?.toString()}</Text>
+                                            <Text style={style.filterText}>{supplier?.name?.toString().toUpperCase()}</Text>
+                                            <View style={style.filterCloseIcon}>
+                                                <Ionicons name="close-outline" size={10}/>
+                                            </View>
                                     </View>
                                 </TouchableOpacity>
                             ))
@@ -170,7 +180,6 @@ const InventoryHomePage = () => {
 
 const style = StyleSheet.create({
     container: {
-    // minHeight: 144,
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -209,7 +218,10 @@ const style = StyleSheet.create({
         height:75,
         width:75,
         backgroundColor:'#ddd',
-        borderRadius: 5
+        borderRadius: 5,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     filterWrapper: {
         flexDirection: 'row',
@@ -237,8 +249,9 @@ const style = StyleSheet.create({
     filterLabel: {
         backgroundColor: '#ccc', 
         width:'auto', 
-        padding: 10, 
+        padding: 15, 
         borderRadius:5,
+        position: 'relative'
     },
     filterContainer: {
         flexWrap: 'wrap', 
@@ -246,6 +259,15 @@ const style = StyleSheet.create({
         flexDirection:'row', 
         gap: 10,
         marginBottom: 10
+    },
+    filterText: {
+        fontSize: 12
+    },
+    filterCloseIcon: {
+        position: 'absolute', 
+        right: 5, 
+        top: 5, 
+        bottom: 0
     }
 });
 

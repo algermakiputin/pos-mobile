@@ -8,6 +8,8 @@ import { Ionicons } from "@expo/vector-icons";
 interface IListItem {
     title: string;
     id: string;
+    email: string;
+    contact: string;
 }
 
 const Suppliers = () => {
@@ -15,7 +17,9 @@ const Suppliers = () => {
     const supplierData = useMemo(() => {
         return data?.suppliers?.map((supplier: any) => ({
             title: supplier?.name,
-            id: supplier?.id
+            id: supplier?.id,
+            email: supplier?.email,
+            contact: supplier?.contact
         }));
     }, [data]);
 
@@ -24,7 +28,7 @@ const Suppliers = () => {
     const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
         <ListItem
             title={() => <Text category="s1">{`${item.title} ${index + 1}`}</Text>}
-            description={() => <Text category="s2">{ `${item?.id} ${index + 1}` }</Text>}
+            description={() => <Text category="s2">{ `${item?.email} | ${item?.contact}` }</Text>}
             accessoryRight={<RenderMenu item={item} />}
         />
     );
