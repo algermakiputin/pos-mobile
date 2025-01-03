@@ -119,6 +119,9 @@ const styles = StyleSheet.create({
         maxHeight: 25,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    normalText: {
+        fontFamily: 'Inter_400Regular'
     }
 });
 

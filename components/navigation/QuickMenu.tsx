@@ -68,7 +68,7 @@ const localStyles = StyleSheet.create({
         paddingBottom: 20
     },
     label: {
-        // fontSize: 14
+        fontFamily:'Inter_400Regular'
     }
 });
 export default QuickMenu;

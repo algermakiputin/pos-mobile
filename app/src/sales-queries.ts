@@ -23,3 +23,12 @@ export const GET_SALES_ANALYTICS = gql`
         }
     }
 `;
+
+export const GET_SALES_OVERVIEW = gql`
+    query GetSalesOverview {
+        getSalesOverview {
+            data
+            keys
+        }
+    }
+`;

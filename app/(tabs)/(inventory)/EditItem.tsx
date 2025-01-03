@@ -160,7 +160,7 @@ const EditItem = () => {
                         render={({field: {onChange, value, onBlur}}) => ( 
                             <View style={styles.formGroup}>
                                 <Input 
-                                    value={formValues.barcode}
+                                    value={formValues?.barcode}
                                     label={"Barcode"}
                                     placeholder="Barcode"
                                     onBlur={onBlur}

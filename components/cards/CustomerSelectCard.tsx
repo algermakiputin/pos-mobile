@@ -21,13 +21,13 @@ const CustomerSelectCard = () => {
                             <Ionicons name="person-circle-outline" size={26} />
                         </View>
                         <View style={style.customerDetails}>
-                            <Text>Customer</Text>
-                            <Text>{order?.customerName || 'Walk In Customer'}</Text>
+                            <Text style={{fontFamily: 'Inter_400Regular'}}>Customer</Text>
+                            <Text style={{fontFamily: 'Inter_600SemiBold'}}>{order?.customerName || 'Walk In Customer'}</Text>
                         </View>
                     </View>
                     <TouchableOpacity onPress={editButtonHandler}>
                         <View style={style.editWrapper}>
-                            <Text>Edit <Ionicons name="create-outline" /></Text>
+                            <Text style={{fontFamily: 'Inter_400Regular'}}>Edit <Ionicons name="create-outline" /></Text>
                         </View>
                     </TouchableOpacity>
                 </View>

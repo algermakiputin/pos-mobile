@@ -10,6 +10,7 @@ import OrderContext from "./context/ordersContext";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { GET_ITEMS } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
+import { formatAmount } from "@/app/utils/utils";
 
 const Orders = () => {
     const route = useRouter();
@@ -48,9 +49,9 @@ const Orders = () => {
                     </Layout>
                     <Layout  style={[style.layout, {alignItems:'flex-start', maxWidth:165}]}>
                         <Text category="s2" style={{color: '#999'}}>{item.barcode}</Text>
-                        <Text>{item.name}</Text>
+                        <Text style={{fontFamily: 'Inter_400Regular'}}>{item.name}</Text>
                         {
-                            isSelected ? <Text style={style.price}>{item.price}</Text> : null
+                            isSelected ? <Text style={style.price}>{formatAmount(Number(item.price))}</Text> : null
                         }
                     </Layout>
                     {
@@ -61,7 +62,7 @@ const Orders = () => {
                                         <Ionicons name="remove-outline" size={14} color={'#000'}/>
                                     </TouchableOpacity>
                                 </View>
-                                <Text>{renderQuantity(item.id)}</Text>
+                                <Text style={{fontFamily: 'Inter_700Bold'}}>{renderQuantity(item.id)}</Text>
                                 <View style={style.actionIconContainer}>
                                     <TouchableOpacity onPress={() => quantityHandler('add', item)}>
                                         <Ionicons name="add-outline" size={14} color={'#000'}/>
@@ -104,7 +105,7 @@ const Orders = () => {
                 </ScrollView>
             </View>
             <View style={[styles.container, {paddingTop: 10}]}>
-                <Text style={{marginBottom: 10, color: '#777'}}>Total 342 Items</Text>
+                <Text style={{marginBottom: 10, color: '#777', fontFamily: 'Inter_400Regular'}}>Total 342 Items</Text>
                 <List
                     style={style.listStyle}
                     data={itemsData?.items?.data}
@@ -116,7 +117,7 @@ const Orders = () => {
                     total={orderTotal}
                     itemCount={order?.cart?.lineItems?.length} 
                     onPressHandler={processOrderHandler} 
-                    title="Proceed New Order"/>
+                    title="New Order"/>
             </View>
         </View>
     );
@@ -124,7 +125,8 @@ const Orders = () => {
 
 const style = StyleSheet.create({
     selectedCategoryColor: {
-        color: primaryColor
+        color: primaryColor,
+        fontFamily: 'Inter_600SemiBold'
     },
     categorySelected: {
         borderColor: primaryColor, 
@@ -149,7 +151,7 @@ const style = StyleSheet.create({
         backgroundColor: 'white'
     },
     price: {
-        fontWeight: 700
+        fontFamily: 'Inter_700Bold'
     },
     actionIconContainer: {
         padding: 7, 
@@ -215,7 +217,8 @@ const style = StyleSheet.create({
         maxWidth: 100,
         alignSelf: 'center',
         borderColor: bodyColor,
-        gap: 10
+        gap: 10,
+        fontFamily: 'Inter_700Bold'
     },
     proceedButton: {
         flex:1,

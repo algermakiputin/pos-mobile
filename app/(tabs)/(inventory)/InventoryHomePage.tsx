@@ -73,7 +73,7 @@ const InventoryHomePage = () => {
     const renderItem = ({item} : { item: Item}) => {
         return (
             <View style={styles.card}>
-                <Text style={{color: '#777'}}>{ item.barcode }</Text>
+                <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
                 <Text style={style.itemTitle}>{ item.name }</Text>
                 <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
                     <View style={{}}>
@@ -82,9 +82,9 @@ const InventoryHomePage = () => {
                         </View> 
                     </View>
                     <View style={[style.productDetailsColumn]}>
-                        <Text category="s2">Stocks: <Text category="s1">{item.stocks}</Text></Text>
-                        <Text category="s2">Supplier: <Text category="s1">{item.supplierName}</Text></Text>
-                        <Text category="s2">Category: <Text category="s1">{item.categoryName}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Stocks: <Text category="s1">{item.stocks}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Supplier: <Text category="s1">{item.supplierName}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Category: <Text category="s1">{item.categoryName}</Text></Text>
                         <Text category="s1" style={style.price}>{ formatAmount(Number(item.price)) }</Text>
                     </View> 
                 </View> 
@@ -211,7 +211,7 @@ const style = StyleSheet.create({
     },
     itemTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: 'Inter_700Bold',
         marginBottom: 10
     },
     itemAvatar: {
@@ -219,7 +219,6 @@ const style = StyleSheet.create({
         width:75,
         backgroundColor:'#ddd',
         borderRadius: 5,
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -244,7 +243,7 @@ const style = StyleSheet.create({
         borderRadius: 5
     },
     price: {
-        fontWeight: 'bold'
+        fontFamily: 'Inter_700Bold'
     },
     filterLabel: {
         backgroundColor: '#ccc', 

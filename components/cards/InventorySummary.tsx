@@ -1,30 +1,35 @@
-import { bodyColor, lighterDark, primaryColor } from "@/app/styles/style";
+import { primaryColor } from "@/app/styles/style";
 import { Layout, Text } from "@ui-kitten/components";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import { GET_SUMMARY } from "@/app/src/item-queries";
+import { useQuery } from "@apollo/client";
+import { formatAmount } from "@/app/utils/utils";
 
 const InventorySummary = () => {
+    const { data: summary } = useQuery(GET_SUMMARY);
+    console.log(`summary`, summary);
     return (
         <Layout style={localStyles.cardContainer}>
             <Text style={localStyles.cardHeaderText}>Inventory Summary</Text>
             <Layout style={{flexDirection: 'row', display: 'flex', flexWrap: 'wrap'}}> 
                 <Layout style={localStyles.layout}>
                     <Text style={localStyles.textDescription}>Total Items</Text>
-                    <Text style={localStyles.textLabel}>2100</Text>
+                    <Text style={localStyles.textLabel}>{ summary?.inventorySummary?.totalItems }</Text>
                 </Layout>
                 <Layout style={localStyles.layout}>
                     <Text style={localStyles.textDescription}>Total Category</Text>
-                    <Text style={localStyles.textLabel}>20</Text>
+                    <Text style={localStyles.textLabel}>{ summary?.inventorySummary?.categories }</Text>
                 </Layout>
             </Layout>
             <Layout>
                 <Layout style={{flexDirection: 'row', display: 'flex', flexWrap: 'wrap'}}> 
                     <Layout style={localStyles.layout}>
                         <Text style={localStyles.textDescription}>Total Capital</Text>
-                        <Text style={localStyles.textLabel}>400</Text>
+                        <Text style={localStyles.textLabel}>{ formatAmount(summary?.inventorySummary?.capital) }</Text>
                     </Layout>
                     <Layout style={localStyles.layout}>
                         <Text style={localStyles.textDescription}>Total Value</Text>
-                        <Text style={localStyles.textLabel}>42001</Text>
+                        <Text style={localStyles.textLabel}>{ formatAmount(summary?.inventorySummary?.value) }</Text>
                     </Layout>
                 </Layout>
             </Layout>

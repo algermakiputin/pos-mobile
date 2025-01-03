@@ -26,8 +26,8 @@ const Summary = () => {
   }})
   
   const renderItemAccessory = (total: number): React.ReactElement => (
-    <Layout style={style.quantity}>
-        <Text>{formatAmount(total)}</Text>
+    <Layout>
+        <Text style={{fontFamily: 'Inter_400Regular'}}>{formatAmount(total)}</Text>
     </Layout>
   );
     
@@ -48,7 +48,7 @@ const Summary = () => {
   return (
     <View style={styles.container}>
       <View style={{backgroundColor: '#fff', borderRadius: 5}}>
-        <Text category="h6" style={{marginBottom: 10, paddingLeft: 10,paddingTop: 10}}>Order Details</Text>
+        <Text category="h6" style={{marginBottom: 10, paddingLeft: 10,paddingTop: 10, fontFamily: 'Inter_700Bold'}}>Order Details</Text>
         <Divider />
         <List
           data={order.cart.lineItems}
@@ -64,11 +64,11 @@ const Summary = () => {
         <Text style={style.priceSummaryHeader} category="s1">Price Summary</Text>
         <Divider style={style.dividerMTB5}/>
         <View style={[styles.flexColumns, styles.mb5]}>
-          <Text>SubTotal</Text>
+          <Text style={{fontFamily: 'Inter_400Regular'}}>SubTotal</Text>
           <Text><Text style={style.textAmount}>{formatAmount(orderTotal)}</Text></Text>
         </View>
         <View style={[styles.flexColumns]}>
-          <Text>Total</Text>
+          <Text style={{fontFamily: 'Inter_400Regular'}}>Total</Text>
           <Text><Text style={style.textAmount}>{formatAmount(orderTotal)}</Text></Text>
         </View>
       </View> 
@@ -81,7 +81,7 @@ const Summary = () => {
 
 const style = StyleSheet.create({
   textAmount: {
-    fontWeight: 700, 
+    fontFamily: 'Inter_700Bold',
     fontSize: 16
   },
   dividerMTB5: {
@@ -89,7 +89,7 @@ const style = StyleSheet.create({
     marginBottom: 5
   },
   priceSummaryHeader: {
-    fontWeight: 700
+    fontFamily: 'Inter_700Bold'
   },
   priceSummaryContainer: {
     backgroundColor: '#fff',

@@ -66,3 +66,14 @@ export const DESTROY_ITEM = gql`
         }
     }
 `;
+
+export const GET_SUMMARY = gql`
+    query InventorySummary {
+        inventorySummary {
+            totalItems
+            capital
+            categories
+            value
+        }
+    }
+`;

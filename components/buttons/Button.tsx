@@ -22,7 +22,7 @@ const Button = (Props: Props) => {
             style={style.container}>
             <View style={[styles.flexColumns, style.buttonWrapper]}>
                 <View>
-                    <Text style={styles.textColorWhite}>{Props.title}</Text>
+                    <Text style={[styles.textColorWhite, {fontFamily: 'Inter_400Regular', fontSize: 14}]}>{Props.title}</Text>
                 </View>
                 <View>
                     <View style={styles.flexColumns}>
@@ -52,15 +52,15 @@ const style = StyleSheet.create({
     },
     textItemQuantity: {
         fontSize: 13,
-        fontWeight: 300,
         color: '#fff',
-        marginRight: 5
+        marginRight: 5,
+        fontFamily: 'Inter_400Regular'
     },
     textAmount: {
         color: '#fff',
         fontSize: 18,
-        fontWeight: 700,
-        marginRight: 10
+        marginRight: 10,
+        fontFamily: 'Inter_700Bold'
     }
 });
 

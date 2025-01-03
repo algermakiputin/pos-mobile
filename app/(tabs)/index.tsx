@@ -1,12 +1,15 @@
-import { Layout, Text, } from "@ui-kitten/components";
+import { Text } from "@ui-kitten/components";
 import { View, ScrollView, StyleSheet } from "react-native";
 import InventorySummary from "@/components/cards/InventorySummary";
 import QuickMenu from "@/components/navigation/QuickMenu";
-import styles, { primaryColor, primarySpotColor } from "../styles/style";
-import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
+import styles, { lighterDark, primaryColor, primarySpotColor } from "../styles/style";
+import { BarChart } from "react-native-gifted-charts";
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { GET_SALES_OVERVIEW } from "../src/sales-queries";
+import { useQuery } from "@apollo/client";
 import { formatAmount } from "../utils/utils";
-import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
+
 const data=[ 
   {value:40000, label: 'Jan'},
   {value:100000, label: 'Feb'},
@@ -24,11 +27,19 @@ const data=[
 
 export default function HomeScreen() {
   const [containerWidth, setContainerWidth] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { data: salesOverViewData } = useQuery(GET_SALES_OVERVIEW);
+  const chartData = salesOverViewData?.getSalesOverview?.data.map((value: number, index:  number) => ({
+    value: value,
+    label: salesOverViewData?.getSalesOverview?.keys[index]
+  }));
+
   return ( 
     <ScrollView>
       <View style={styles.container}>
-        <Text style={localStyles.welcomeMessage} category="h6">Welcome, John Doe!</Text>
+        <View style={localStyles.topWrapper}>
+          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, John Doe!</Text>
+          <Ionicons style={{marginLeft: -25}} size={26} name="person-circle-outline" />
+        </View>
         <InventorySummary />
         <QuickMenu />
         <View style={{backgroundColor:'#fff', marginTop:10, paddingBottom: 20,paddingTop:20, borderRadius:10}} onLayout={({nativeEvent}) => setContainerWidth(nativeEvent.layout.width)}>
@@ -38,14 +49,15 @@ export default function HomeScreen() {
             scrollAnimation ={true}
             width={containerWidth - 30} 
             hideYAxisText
-            data ={data}
+            data ={chartData}
             showFractionalValues
             yAxisThickness={0}
             xAxisThickness={1}
+            xAxisColor={lighterDark}
             overflowTop={10}
             isAnimated
-            noOfSections={10}
-            rulesThickness={1}
+            noOfSections={5}
+           // rulesThickness={1}
             verticalLinesColor={'white'}
             adjustToWidth={true}
             showGradient
@@ -64,14 +76,14 @@ export default function HomeScreen() {
                 return (
                   <View
                     style={{
-                      width: 100,
-                      flexWrap: 'wrap',
+                      minWidth:145,
+                      width:'auto',
                       padding: 6,
                       borderWidth: 1,
                       borderRadius: 8,
                       backgroundColor: '#eee',
                     }}>
-                    <Text>{(items[0].value)}</Text>
+                    <Text>{formatAmount(items[0].value)}</Text>
                   </View>
                 );
               },
@@ -89,5 +101,11 @@ const localStyles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'Inter_800ExtraBold',
     fontSize: 20
+  },
+  topWrapper: {
+    flex: 1, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between'
   }
 });
