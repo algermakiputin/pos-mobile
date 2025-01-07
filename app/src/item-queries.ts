@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_ITEMS = gql`
-    query Items {
-        items {
+    query Items($filter: ItemFilter) {
+        items(filter: $filter) {
             data {
             id
             name

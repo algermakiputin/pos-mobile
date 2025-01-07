@@ -23,7 +23,8 @@ const Orders = () => {
         variables: {
             filter: {
                 query: search,
-                categories: selectedCategory ? [selectedCategory] : []
+                categories: selectedCategory ? [selectedCategory] : [],
+                limit: 10
             }
         }
     });

@@ -5,9 +5,11 @@ import 'react-native-reanimated';
 import OrderContext, { defaultValue } from './context/ordersContext';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { Order, CartLineItem } from '@/app/types/order';
 import { Item } from '@/app/types/item';
+import { View } from 'react-native';
+import { Text } from '@ui-kitten/components';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -98,9 +100,10 @@ export default function OrdersLayout() {
             name='receipt'
             options={{
               headerTitle: 'Receipt',
-              headerTitleAlign: 'center',
-              headerBackTitle: 'back',
-              headerBackVisible: false
+              headerTitleAlign: 'center', 
+              headerLeft: () => {
+                return <Fragment></Fragment>
+              }
             }}
           />
         </Stack>

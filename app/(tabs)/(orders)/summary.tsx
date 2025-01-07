@@ -1,16 +1,15 @@
 import { List, ListItem, Divider, Layout, Text } from "@ui-kitten/components";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet } from "react-native";
 import CustomerSelectCard from "@/components/cards/CustomerSelectCard";
 import styles from "@/app/styles/style";
 import Button from "@/components/buttons/Button";
 import { useRouter } from "expo-router";
 import OrderContext from "./context/ordersContext";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { CartLineItem } from "@/app/types/order";
 import { formatAmount } from "@/app/utils/utils";
 import { STORE_SALES } from "@/app/src/sales-queries";
 import { useMutation } from "@apollo/client";
-import { routes } from "@/app/types/routes";
 
 const Summary = () => {
   const route = useRouter();
@@ -33,7 +32,7 @@ const Summary = () => {
     
   const submitHandler = async () => {
     await storeSales();
-    route.navigate({pathname: routes.receipt as any});
+    route.navigate('/receipt');
   }
   
   const renderItem = ({ item, index }: { item: CartLineItem; index: number }): React.ReactElement => (

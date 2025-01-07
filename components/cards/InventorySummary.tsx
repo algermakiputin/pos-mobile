@@ -7,7 +7,6 @@ import { formatAmount } from "@/app/utils/utils";
 
 const InventorySummary = () => {
     const { data: summary } = useQuery(GET_SUMMARY);
-    console.log(`summary`, summary);
     return (
         <Layout style={localStyles.cardContainer}>
             <Text style={localStyles.cardHeaderText}>Inventory Summary</Text>

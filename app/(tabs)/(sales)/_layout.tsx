@@ -24,6 +24,14 @@ export default function SalesLayout() {
             headerTitleAlign:'center'
           }} 
           />
+       <Stack.Screen 
+          name="SalesDetails" 
+          options={{ 
+            headerShown: true,
+            headerTitle: 'Sales Details',
+            headerTitleAlign:'center'
+          }} 
+          />
       </Stack>
     </ThemeProvider>
   );

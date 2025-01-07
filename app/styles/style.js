@@ -21,6 +21,9 @@ const styles = StyleSheet.create({
     mb10: {
         marginBottom: 10
     },
+    mb20: {
+        marginBottom: 20
+    },  
     mb5: {
         marginBottom: 5
     }, 

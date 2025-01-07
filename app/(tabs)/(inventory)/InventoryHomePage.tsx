@@ -1,14 +1,14 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import styles, { bodyColor } from "@/app/styles/style";
-import { Input, List, Text} from "@ui-kitten/components";
+import { Input, List, Spinner, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
 import { routes } from "@/app/types/routes";
 import { GET_ITEMS, DESTROY_ITEM } from "@/app/src/item-queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
 import BasicLoader from "@/components/Loader/BasicLoader";
 import { formatAmount } from "@/app/utils/utils";
@@ -16,13 +16,15 @@ import { formatAmount } from "@/app/utils/utils";
 const InventoryHomePage = () => {
     const router = useRouter(); 
     const { ContextMenu } = renderers;
+    const [limit, setLimit] = useState(10);
     const { filters, setFilter, removeFilter } = useContext(InventoryContext);
     const { loading, error, data, refetch } = useQuery(GET_ITEMS, {
         variables: {
             filter: {
                 query: filters.query,
                 categories: filters.categories?.map(category => category?.id),
-                suppliers: filters.suppliers?.map(supplier => supplier.id)
+                suppliers: filters.suppliers?.map(supplier => supplier.id),
+                limit
             }
         },
     }); 
@@ -169,11 +171,17 @@ const InventoryHomePage = () => {
                 
             }
             <Text category="s1" style={{marginBottom: 10, color: "#777"}}>Total { data?.items?.count } Items</Text>
-            <List
-                style={{backgroundColor: 'transparent'}}
-                data={data?.items?.data}
-                renderItem={renderItem}
-            />
+            {
+                loading && <Spinner />
+            }
+            {
+                <List
+                    style={{backgroundColor: 'transparent'}}
+                    data={data?.items?.data}
+                    renderItem={renderItem}
+                    onEndReached={() => setLimit(limit + 10)}
+                />
+            }
         </View>
     );
 }

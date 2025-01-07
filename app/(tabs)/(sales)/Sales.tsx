@@ -5,16 +5,19 @@ import Dropdown from "@/components/dropdown/Dropdown";
 import { GET_SALES_ANALYTICS } from "@/app/src/sales-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
+import { Fragment, useEffect } from "react";
+import { useRouter } from "expo-router";
 
 const Sales = () => {
     const { width } = Dimensions.get('window');
-    const { data: salesData } = useQuery(GET_SALES_ANALYTICS);
-
+    const { data: salesData, refetch } = useQuery(GET_SALES_ANALYTICS);
+    const route = useRouter();
     const renderItemAccessory = (total: number): React.ReactElement => (
         <View>
             <Text style={{fontWeight: 700, paddingRight: 5}}>{ formatAmount(total) }</Text>
         </View>
     );
+
     const renderItemIcon = (index: number): IconElement => (
         <Text>{index}</Text>
     );
@@ -22,67 +25,73 @@ const Sales = () => {
     const renderItem = ({ item, index }: { item: any; index: number }): React.ReactElement => (
         <ListItem
             title={ () => <Text style={{color:'#777'}}>{ item?.transaction_number }</Text>}
-            description={() => <View><Text category="s2">{item?.totalItems} Items | 04-21-2024</Text><Text category="s2">Customer:  { item?.customer_name ? item.customer_name : 'Walk-In' }</Text></View>}
+            description={() => <View><Text category="s2">{item?.totalItems} Items | </Text><Text category="s2">Customer:  { item?.customer_name ? item.customer_name : 'Walk-In' }</Text></View>}
             accessoryLeft={renderItemIcon(index + 1)}
             accessoryRight={() => renderItemAccessory(item?.total)}
+            onPress={() => showDetailsHandler(item?.transaction_number)}
         />
     );
 
-    const data = new Array(25).fill({
-        title: "1x Dandelion Juice",
-        description: '1x PHP18',
-        total: 180
-    });
-
     const dropdownData = [{title: 'Today'}, {title: 'Yesterday'}, {title: 'This Month'}, {title: 'Last Month'}];
-  
+    
+    const showDetailsHandler = ( transaction_number: string) => {
+        route.navigate({pathname: "/SalesDetails", params: { transaction_number }});
+    }
+
+    useEffect(() => {
+        refetch();
+    }, [])
+
     return (
-        <View style={style.container}>
-            <View style={style.statisticWrapper}>
-                <View style={[style.statisticsContainer]}>
-                    <View style={[style.statisticHeader, { width: width - 60 }]}>
-                        <Layout style={[style.flexContainer, {marginBottom: 10}]}>
-                            <Layout style={[styles.flex, {justifyContent: 'center'}]}>
-                                <Text style={{fontFamily:'Inter_800ExtraBold'}}>Statistics</Text>
+        <Fragment>
+            <View style={style.container}>
+                <View style={style.statisticWrapper}>
+                    <View style={[style.statisticsContainer]}>
+                        <View style={[style.statisticHeader, { width: width - 60 }]}>
+                            <Layout style={[style.flexContainer, {marginBottom: 10}]}>
+                                <Layout style={[styles.flex, {justifyContent: 'center'}]}>
+                                    <Text style={{fontFamily:'Inter_800ExtraBold'}}>Statistics</Text>
+                                </Layout>
+                                <Layout style={[styles.flex, {alignItems: 'flex-end', justifyContent: 'center'}]} level="1">
+                                    <View>
+                                        <Dropdown placeholder="Today" data={dropdownData} width={120} />
+                                    </View>
+                                </Layout>
                             </Layout>
-                            <Layout style={[styles.flex, {alignItems: 'flex-end', justifyContent: 'center'}]} level="1">
-                                <View>
-                                    <Dropdown placeholder="Today" data={dropdownData} width={120} />
-                                </View>
+                        </View>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <Layout style={[styles.row, { gap: 15, paddingRight:100}]}>
+                                <Layout style={[style.flexItem, {backgroundColor: ''}]}>
+                                    <Text style={style.columnLabel}>Total Earnings</Text>
+                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ (formatAmount(salesData?.getSales?.totalEarnings)) }</Text>  
+                                </Layout>
+                                <Layout style={style.flexItem}>
+                                    <Text style={style.columnLabel}>Item Sold</Text>
+                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold }</Text>
+                                </Layout>
+                                <Layout style={style.flexItem}>
+                                    <Text style={style.columnLabel}>Net Sales</Text>
+                                    <Text style={style.amountLabel}>{ formatAmount(salesData?.getSales?.netSales) }</Text>
+                                </Layout>
                             </Layout>
-                        </Layout>
-                    </View>
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <Layout style={[styles.row, { gap: 15, paddingRight:100}]}>
-                            <Layout style={[style.flexItem, {backgroundColor: ''}]}>
-                                <Text style={style.columnLabel}>Total Earnings</Text>
-                                <Text style={[style.amountLabel, style.labelBorderRight]}>{ (formatAmount(salesData?.getSales?.totalEarnings)) }</Text>  
-                            </Layout>
-                            <Layout style={style.flexItem}>
-                                <Text style={style.columnLabel}>Item Sold</Text>
-                                <Text style={[style.amountLabel, style.labelBorderRight]}>{ formatAmount(salesData?.getSales?.itemSold) }</Text>
-                            </Layout>
-                            <Layout style={style.flexItem}>
-                                <Text style={style.columnLabel}>Net Sales</Text>
-                                <Text style={style.amountLabel}>{ formatAmount(salesData?.getSales?.netSales) }</Text>
-                            </Layout>
-                        </Layout>
-                    </ScrollView>
-                </View> 
+                        </ScrollView>
+                    </View> 
+                </View>
+                <View style={style.transactionsContainer}>
+                    <Layout style={{borderRadius: 10}}>
+                        <Text style={[styles.sectionHeader, {paddingLeft: 15,paddingTop:15}]}>Recent Transaction</Text>
+                        <Divider/>
+                        <List
+                            data={salesData?.getSales?.transactions}
+                            renderItem={renderItem}
+                            ItemSeparatorComponent={Divider}
+                            style={{height: '100%'}}
+                        />
+                    </Layout>
+                    
+                </View>
             </View>
-            <View style={style.transactionsContainer}>
-                <Layout style={{borderRadius: 10}}>
-                    <Text style={[styles.sectionHeader, {paddingLeft: 15,paddingTop:15}]}>Recent Transaction</Text>
-                    <Divider/>
-                    <List
-                        data={salesData?.getSales?.transactions}
-                        renderItem={renderItem}
-                        ItemSeparatorComponent={Divider}
-                        style={{height: '100%'}}
-                    />
-                </Layout>
-            </View>
-        </View>
+        </Fragment>
     );
 }
 
