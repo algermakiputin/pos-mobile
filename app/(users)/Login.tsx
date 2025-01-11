@@ -1,7 +1,13 @@
 import { Button, Divider, Input, Text } from "@ui-kitten/components";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import styles from "../styles/style";
 import { useRouter } from "expo-router";
+import { useMutation } from "@apollo/client";
+import { LOGIN } from "../src/users-queries";
+import { useForm, Controller } from 'react-hook-form';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserContext from "../context/userContext";
+import { useContext } from "react";
 
 const Login = () => {
     const googleLogo = require('@/assets/images/logo/google.png');
@@ -9,21 +15,66 @@ const Login = () => {
     const redirectToRegister = () => {
         route.navigate('/Register');
     }
+    const { setUser } = useContext(UserContext);
+    const [login, { loading }] = useMutation(LOGIN);
+    const { control, handleSubmit, formState: { errors }, reset } = useForm();
+
+    const handleFormSubmit = async (data: any) => {
+        const userLogin = await login({
+            variables: {
+                user: {
+                    email: data?.email,
+                    password: data?.password
+                }
+            }
+        });
+        if (userLogin?.data?.login?.email) {
+            setUser(userLogin?.data?.login);
+            AsyncStorage.setItem('token', userLogin?.data?.login?.token);
+            route.navigate('/(tabs)');
+        }
+    }
+
     return (
         <View style={localStyles.container}>
             <Text category="h2" style={styles.mb20}>Login</Text>
             <Text style={styles.mb20}>Login to continue using the app</Text>
-            <Input 
-                label={"Email"}
-                placeholder="Enter your email"
-                style={styles.mb20}
+            <Controller 
+                name="email"
+                control={control}
+                render={({field: {onChange, value, onBlur}}) => (  
+                    <View style={styles.mb20}>
+                        <Input 
+                            label={"Email"}
+                            placeholder="Enter your email"
+                            onChangeText={onChange}
+                            value={value}
+                            onBlur={onBlur}
+                        />
+                        { (errors as any)?.email?.message && <Text style={styles.textDanger}>{(errors as any)?.email?.message}</Text>}
+                    </View>
+                )}
+                rules={{required: 'First name is required'}}
             />
-            <Input 
-                label={"Password"}
-                placeholder="Enter password"
-                style={styles.mb20}
-            />
-            <Button style={styles.mb20}>Login</Button>
+            <Controller 
+                name="password"
+                control={control}
+                render={({field: {onChange, value, onBlur}}) => (  
+                    <View style={styles.mb20}>
+                        <Input 
+                            label={"Password"}
+                            placeholder="Enter password"
+                            onChangeText={onChange}
+                            value={value}
+                            onBlur={onBlur}
+                            secureTextEntry={true}
+                        />
+                        { (errors as any)?.password?.message && <Text style={styles.textDanger}>{(errors as any)?.password?.message}</Text>}
+                    </View>
+                )}
+                rules={{required: 'First name is required'}}
+            /> 
+            <Button style={styles.mb20} onPress={handleSubmit(handleFormSubmit)} disabled={loading}>{ loading ? 'Loading...' : 'Login'}</Button>
             <View style={localStyles.otherWaysLoginWrapper}>
                 <Divider style={localStyles.otherWaysDivider} />
                 <Text style={[styles.mb20, localStyles.loginWithText]}>Or Login with</Text>
@@ -34,7 +85,7 @@ const Login = () => {
                     <Image source={googleLogo} style={localStyles.socialLoginIcon} />
                 </View>
             </View>
-            <Text style={{textAlign: 'center'}}>Don't have an account? <TouchableOpacity onPress={redirectToRegister}><Text>Register</Text></TouchableOpacity></Text>
+            <Text style={{textAlign: 'center'}}>Don't have an account? <Text onPress={redirectToRegister}>Register</Text></Text>
         </View>
     );
 }

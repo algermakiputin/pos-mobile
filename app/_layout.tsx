@@ -2,7 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider} from '@ui-kitten/components';
@@ -22,6 +22,8 @@ import {
   Inter_900Black,
 } from '@expo-google-fonts/inter';
 import { default as mapping } from './mapping.json';
+import UserContext from './context/userContext';
+import { userDefaultValue } from './context/userContext';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -38,7 +40,7 @@ export default function RootLayout() {
     Inter_800ExtraBold,
     Inter_900Black,
   });
-
+  const [user, setUser] = useState(userDefaultValue.user);
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -54,13 +56,18 @@ export default function RootLayout() {
       <ApplicationProvider {...eva} theme={eva.light} customMapping={mapping}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <MenuProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(categories)" options={{ headerShown: false}}/>
-              <Stack.Screen name="(suppliers)" options={{ headerShown: false}}/>
-              <Stack.Screen name="(users)" options={{ headerShown: false}}/>
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <UserContext.Provider value={{ user: user, setUser}}>
+              <Stack
+                  initialRouteName='(users)'
+                >
+                <Stack.Screen name="(users)" options={{ headerShown: false}}/>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(categories)" options={{ headerShown: false}}/>
+                <Stack.Screen name="(suppliers)" options={{ headerShown: false}}/>
+                <Stack.Screen name="index" options={{ headerShown: false}}/>
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </UserContext.Provider>
           </MenuProvider>
         </ThemeProvider>
       </ApplicationProvider>

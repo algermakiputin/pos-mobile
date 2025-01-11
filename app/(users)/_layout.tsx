@@ -6,9 +6,8 @@ import 'react-native-reanimated';
 SplashScreen.preventAutoHideAsync();
 
 export default function UsersLayout() {
-
   return (
-    <Stack screenOptions={{headerShown: true, title: 'qew', headerTitle: 'qeqwe'}}>
+    <Stack screenOptions={{headerShown: true, title: 'qew', headerTitle: 'qeqwe'}} initialRouteName='Login'>
       <Stack.Screen 
         name="Profile" 
         options={{
@@ -26,7 +25,7 @@ export default function UsersLayout() {
       <Stack.Screen 
         name="Register" 
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
         />
     </Stack>

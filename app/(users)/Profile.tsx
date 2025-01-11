@@ -1,16 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Button, Divider, Text } from "@ui-kitten/components";
 import { View } from "react-native";
+import UserContext from "../context/userContext";
+import { useContext } from "react";
 
 const Profile = () => {
+  const { user } = useContext(UserContext);
+  console.log(`user`, user);
   return (
     <View style={{backgroundColor:'#fff', padding: 20, flex: 1}}>
       <View style={{width:90, height: 90, alignSelf: 'center', backgroundColor:'#333', borderRadius: 100}}>
       </View>
-      <Text style={{textAlign:'center', marginTop: 10,marginBottom: 20}}>Alger Makiputin</Text>
+      <Text style={{textAlign:'center', marginTop: 10,marginBottom: 20}}>{ user.firstName } { user.lastName }</Text>
       <View style={{flexDirection: 'row', justifyContent:'flex-start', gap: 20,paddingBottom: 20}}>
         <Ionicons name="person-outline" size={20} />
-        <Text>Hello World</Text>
+        <Text>{ user.firstName } { user.lastName }</Text>
       </View>
       <Divider style={{marginBottom:20}}/>
       <View style={{flexDirection: 'row', justifyContent:'flex-start', gap: 20,paddingBottom: 20}}>
@@ -25,7 +29,7 @@ const Profile = () => {
       <Divider style={{marginBottom:10}}/>
       <View style={{flexDirection: 'row', justifyContent:'flex-start', gap: 20,paddingBottom: 20}}>
         <Ionicons name="mail-outline" size={20} />
-        <Text>helloworld@gmail.com</Text>
+        <Text>{ user.email }</Text>
       </View>
       <Divider style={{marginBottom:10}}/>
       <View style={{flex: 1, flexDirection: 'row', justifyContent:'space-between', flexWrap:'wrap'}}>

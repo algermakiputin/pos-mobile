@@ -4,12 +4,13 @@ import InventorySummary from "@/components/cards/InventorySummary";
 import QuickMenu from "@/components/navigation/QuickMenu";
 import styles, { lighterDark, primaryColor, primarySpotColor } from "../styles/style";
 import { BarChart } from "react-native-gifted-charts";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { GET_SALES_OVERVIEW } from "../src/sales-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "../utils/utils";
 import { useRouter } from "expo-router";
+import UserContext from "../context/userContext";
 
 export default function HomeScreen() {
   const [containerWidth, setContainerWidth] = useState(0);
@@ -19,13 +20,13 @@ export default function HomeScreen() {
     label: salesOverViewData?.getSalesOverview?.keys[index]
   }));
   const route = useRouter();
-
+  const { user } = useContext(UserContext);
   return ( 
     <ScrollView>
       <View style={styles.container}>
         <View style={localStyles.topWrapper}>
-          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, John Doe!</Text>
-          <TouchableOpacity onPress={() => route.navigate('/Login')}>
+          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, { user.firstName }!</Text>
+          <TouchableOpacity onPress={() => route.navigate('/Profile')}>
             <Ionicons style={{marginLeft: -25}} size={26} name="person-circle-outline" />
           </TouchableOpacity>
         </View>
