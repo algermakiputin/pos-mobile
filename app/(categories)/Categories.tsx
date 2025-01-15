@@ -3,20 +3,25 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
 import { Ionicons } from "@expo/vector-icons";
 import { GET_CATEGORIES, DESTROY_CATEGORY } from "../src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
+import { useRouter } from "expo-router";
+import { Alert } from "react-native";
 
 interface IListItem {
     title: string;
     id: string;
+    itemCount: number;
 }
 
 const Categories = () => {
     const { data, refetch } = useQuery(GET_CATEGORIES);
     const [destroyCategory] = useMutation(DESTROY_CATEGORY);
+    const router = useRouter();
+
     const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
         <ListItem
-            title={() => <Text category="s1">{`${item.title} ${index + 1}`}</Text>}
-            description={() => <Text category="s2">{ `Total ${index + 1} Items` }</Text>}
+            title={() => <Text category="s1">{ item.title }</Text>}
+            description={() => <Text category="s2">{ `Total ${item.itemCount} Items` }</Text>}
             accessoryRight={<RenderMenu item={item} />}
         />
     );
@@ -24,7 +29,8 @@ const Categories = () => {
     const categoriesData = useMemo(() => {
         return data?.categories?.map((category: any) => ({
             title: category?.name,
-            id: category?.id
+            id: category?.id,
+            itemCount: category?.itemCount
         }))
     }, [data]);
 
@@ -38,8 +44,32 @@ const Categories = () => {
             alert("Category Deleted Successfully");
             refetch();
         }
-       
     }
+
+    const showAlert = (id: string) =>
+        Alert.alert(
+            'Are you sure you want to delete that Category?',
+            'That category will be permanently deleted',
+            [
+                {
+                    text: 'Confirm',
+                    onPress: () => destroyCategoryHandler(id),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Cancel',
+                    onPress: () => Alert.alert('Cancel Pressed'),
+                    style: 'cancel',
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () =>
+                    Alert.alert(
+                    'This alert was dismissed by tapping outside of the alert dialog.',
+                ),
+            },
+        );
 
     const RenderMenu = ({item} : { item: IListItem}) => {
         return (
@@ -48,9 +78,8 @@ const Categories = () => {
                     <Ionicons name="ellipsis-vertical-outline" size={18} />
                 </MenuTrigger>
                 <MenuOptions>
-                    <MenuOption onSelect={() => alert(`Save`)} text='View' />
-                    <MenuOption onSelect={() => alert('test')}  text="Edit"/>
-                    <MenuOption onSelect={() => destroyCategoryHandler(item?.id)} >
+                    <MenuOption onSelect={() => router.navigate({pathname: '/EditCategory', params: { id: item.id }})}  text="Edit"/>
+                    <MenuOption onSelect={() => showAlert(item?.id)} >
                         <Text style={{color: 'red'}}>Delete</Text>
                     </MenuOption>
                 </MenuOptions>

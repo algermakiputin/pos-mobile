@@ -3,12 +3,14 @@ import { setContext } from "@apollo/client/link/context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getToken = async () => {
-    return await AsyncStorage.getItem('token');
+    const token = await AsyncStorage.getItem('token');
+    return token;
 }
 
 const httpLink = createHttpLink({
-    uri: 'http://192.168.1.3:3333/'
+    uri: 'http://192.0.0.2:3333/'
 });
+
 
 const authLink = setContext(async (root: any, { headers }) => {
     return {

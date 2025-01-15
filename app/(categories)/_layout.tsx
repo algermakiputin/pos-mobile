@@ -26,9 +26,18 @@ export default function CategoriesLayout() {
           headerTitleAlign: "center",
           headerRight: () => <HeaderRight />
         }} />
-        <Stack.Screen name="NewCategory" options={{ 
-          headerTitle: 'New Category',  
-        }} />
+        <Stack.Screen 
+          name="NewCategory" 
+          options={{ 
+            headerTitle: 'New Category',  
+          }} 
+          />
+        <Stack.Screen 
+          name="EditCategory" 
+          options={{ 
+            headerTitle: 'Edit',  
+          }} 
+          />
       </Stack> 
     </Fragment>
   );

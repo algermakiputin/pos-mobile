@@ -13,7 +13,7 @@ export const REGISTER = gql`
 `;
 
 export const LOGIN = gql`
-    mutation Register($user: LoginInput) {
+    mutation Login($user: LoginInput) {
         login(user: $user) {
             id
             email

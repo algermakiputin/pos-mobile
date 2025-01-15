@@ -1,5 +1,5 @@
 import { Input, Layout, Text, List, Divider } from "@ui-kitten/components";
-import { ScrollView, View, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
 import styles, { primaryColor, bodyColor, primarySpotColor, secondaryColor, blackLightShade, accentColor, lighterDark } from "@/app/styles/style";
 import Button from "@/components/buttons/Button";
@@ -42,11 +42,19 @@ const Orders = () => {
 
     const renderItem = ({ item, index }: { item: Item, index: number }) => {
         const isSelected = (selectedIndex == index || renderQuantity(item.id));
+        console.log(`the image`, item.image);
         return (
             <TouchableOpacity onPress={() => setSelectedIndex(index)}>
                 <Layout style={[style.item, isSelected ? {borderWidth: 1, borderColor: lighterDark} : {}]}>
                     <Layout  style={[style.layout, style.avatar]}>
-                        <Ionicons name="image-outline" size={30} style={{color: '#ccc'}}/>
+                        {
+                            item?.image ? (
+                                <Image source={{uri: item.image }} width={50} height={50} style={{borderRadius: 15, borderWidth: 1, borderColor: '#f4f4f5'}}/>
+                            ) :
+                            (
+                                <Ionicons name="image-outline" size={30} style={{color: '#ccc'}}/>
+                            )
+                        }
                     </Layout>
                     <Layout  style={[style.layout, {alignItems:'flex-start', maxWidth:165}]}>
                         <Text category="s2" style={{color: '#999'}}>{item.barcode}</Text>

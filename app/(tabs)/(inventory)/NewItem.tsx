@@ -20,7 +20,7 @@ type FormInput = {
     supplier_id: string;
     capital: string;
     price: string;
-    stocks: number;
+    stocks: string;
     image: string;
 }
 
@@ -80,17 +80,6 @@ const NewItem = () => {
             AsyncStorage.setItem(key, value);
         } catch(e) {
             console.log(`error`, e);
-        }
-    }
-    
-    const getImage = async () => {
-        try {
-            const itemImage = await AsyncStorage.getItem("algertest");
-            if (itemImage) {
-                setImage(itemImage);
-            }
-        } catch (error) {
-            console.log(`error`, error);
         }
     }
 
@@ -248,10 +237,10 @@ const NewItem = () => {
                             name="capital"
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
-                                <View style={styles.formGroup}>
+                                <View style={[styles.formGroup, { flex: 1}]}>
                                     <TextInput 
                                         placeholder="Capital" 
-                                        style={styles.input}
+                                        style={[styles.input]}
                                         onBlur={onBlur}
                                         value={formValues?.capital}
                                         onChangeText={value => {
@@ -268,10 +257,10 @@ const NewItem = () => {
                             name="price"
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
-                                <View style={styles.formGroup}>
+                                <View style={[styles.formGroup, { flex: 1}]}>
                                     <TextInput 
                                         placeholder="Retail Price" 
-                                        style={styles.input}
+                                        style={[styles.input]}
                                         onBlur={onBlur}
                                         value={formValues?.price}
                                         onChangeText={value => {
@@ -295,7 +284,7 @@ const NewItem = () => {
                                         placeholder="Stocks" 
                                         style={styles.input}
                                         onBlur={onBlur}
-                                        value={String(formValues?.stocks)}
+                                        value={formValues?.stocks}
                                         onChangeText={value => { 
                                             inputChangeHandler('stocks', Number(value));
                                             onChange(value);

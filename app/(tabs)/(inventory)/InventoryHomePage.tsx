@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import styles, { bodyColor } from "@/app/styles/style";
 import { Input, List, Spinner, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,9 +8,8 @@ import { routes } from "@/app/types/routes";
 import { GET_ITEMS, DESTROY_ITEM } from "@/app/src/item-queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { Item } from "@/app/types/item";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
-import BasicLoader from "@/components/Loader/BasicLoader";
 import { formatAmount } from "@/app/utils/utils";
 
 const InventoryHomePage = () => {
@@ -43,9 +42,13 @@ const InventoryHomePage = () => {
     }
 
     const deleteHandler = async (id: string) => {
-        const destroy = await destroyItem({ variables: { id }});
+        await destroyItem({ variables: { id }});
         refetch();
     }
+
+    useEffect(() => {
+        refetch();
+    }, []);
 
     const showAlert = (id: string) =>
         Alert.alert(
@@ -79,14 +82,22 @@ const InventoryHomePage = () => {
                 <Text style={style.itemTitle}>{ item.name }</Text>
                 <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
                     <View style={{}}>
-                        <View style={style.itemAvatar}>
-                            <Ionicons name="image-outline" size={28} color={"#ccc"}/>
-                        </View> 
+                        {
+                            item.image ? (
+                                <View style={{borderRadius: 15, borderWidth: 1, borderColor: '#eee'}}>
+                                    <Image style={{borderRadius: 15}} source={{uri: item.image}} height={75} width={75}/>
+                                </View>
+                            ) : (
+                                <View style={style.itemAvatar}>
+                                    <Ionicons name="image-outline" size={28} color={"#ccc"}/>
+                                </View> 
+                            )
+                        }
                     </View>
                     <View style={[style.productDetailsColumn]}>
-                        <Text category="s2" style={styles.normalText}>Stocks: <Text category="s1">{item.stocks}</Text></Text>
-                        <Text category="s2" style={styles.normalText}>Supplier: <Text category="s1">{item.supplierName}</Text></Text>
-                        <Text category="s2" style={styles.normalText}>Category: <Text category="s1">{item.categoryName}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Supplier: <Text style={style.textValue}>{item.supplierName}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Category: <Text style={style.textValue}>{item.categoryName}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Stocks: <Text style={style.textValue}>{item.stocks}</Text></Text>
                         <Text category="s1" style={style.price}>{ formatAmount(Number(item.price)) }</Text>
                     </View> 
                 </View> 
@@ -95,7 +106,7 @@ const InventoryHomePage = () => {
                         <Ionicons name="ellipsis-vertical-outline" size={18} />
                     </MenuTrigger>
                     <MenuOptions>
-                        <MenuOption onSelect={() => alert(`Save`)} text='View' />
+                        <MenuOption onSelect={() => router.navigate({ pathname: '/ViewItem', params: { id: item.id }})} text='View' />
                         <MenuOption onSelect={() => router.navigate({pathname: routes.editItem as any, params: { id: item.id }})}  text="Edit"/>
                         <MenuOption onSelect={() => showAlert(item.id)} >
                             <Text style={{color: 'red'}}>Delete</Text>
@@ -251,6 +262,7 @@ const style = StyleSheet.create({
         borderRadius: 5
     },
     price: {
+        marginTop: 5,
         fontFamily: 'Inter_700Bold'
     },
     filterLabel: {
@@ -275,6 +287,10 @@ const style = StyleSheet.create({
         right: 5, 
         top: 5, 
         bottom: 0
+    },
+    textValue: {
+        fontFamily: 'Inter_600SemiBold', 
+        fontSize: 14
     }
 });
 

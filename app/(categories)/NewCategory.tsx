@@ -19,7 +19,7 @@ const NewCategory = () => {
         if (store?.data?.storeCategory?.success) {
             alert("Category added successfully");
             reset();
-            refetch();
+            await refetch();
         }
     };
 

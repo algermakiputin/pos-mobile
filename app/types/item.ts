@@ -8,4 +8,5 @@ export type Item = {
     categoryName: string;
     barcode: string;
     capital: number;
+    image: string;
 }

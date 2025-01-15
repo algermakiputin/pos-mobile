@@ -4,15 +4,16 @@ export const GET_ITEMS = gql`
     query Items($filter: ItemFilter) {
         items(filter: $filter) {
             data {
-            id
-            name
-            description
-            price
-            stocks
-            categoryName
-            supplierName
-            barcode
-            capital
+                id
+                name
+                description
+                price
+                stocks
+                categoryName
+                supplierName
+                barcode
+                capital
+                image
             }
             count
         }
@@ -43,6 +44,7 @@ export const GET_ITEM = gql`
             capital
             supplier_id
             category_id
+            image
         }
     }
 `;

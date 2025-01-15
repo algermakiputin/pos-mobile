@@ -92,6 +92,14 @@ export default function InventoryLayout() {
               headerRight: filterHeaderRight,
             }} 
             />
+          <Stack.Screen 
+            name="ViewItem"
+            options={{ 
+              headerShown: true,
+              headerTitle: 'Item Details',
+              headerTitleAlign:'center'
+            }} 
+            />
         </Stack>
       </ThemeProvider>
     </InventoryContext.Provider>

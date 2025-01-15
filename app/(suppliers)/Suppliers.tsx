@@ -13,7 +13,7 @@ interface IListItem {
 }
 
 const Suppliers = () => {
-    const { data, refetch } = useQuery(GET_SUPPLIER);
+    const { data, refetch, error } = useQuery(GET_SUPPLIER);
     const supplierData = useMemo(() => {
         return data?.suppliers?.map((supplier: any) => ({
             title: supplier?.name,

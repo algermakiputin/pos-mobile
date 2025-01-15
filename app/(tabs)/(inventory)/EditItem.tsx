@@ -1,4 +1,4 @@
-import { View, TextInput, ScrollView, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import styles, { blackLightShade } from '../../styles/style';
 import { useForm, Controller } from "react-hook-form";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -12,6 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
 import { Layout, Button, Input } from "@ui-kitten/components";
 import BasicLoader from "@/components/Loader/BasicLoader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type FormInput = {
     barcode: string;
@@ -43,11 +44,12 @@ const EditItem = () => {
     const [image, setImage] = useState('');
     const [formValues, setFormValues] = useState<FormInput>(formInputDefaultValue);
     const params = useLocalSearchParams();
-    const { data: itemData, loading: itemLoading } = useQuery(GET_ITEM, {
+    const { data: itemData, loading: itemLoading, refetch: refetchItem } = useQuery(GET_ITEM, {
         variables: {
             id: params.id
         }
     });
+    
     const { refetch } = useQuery(GET_ITEMS);
     const [ updateItem, { error: updateError } ] = useMutation(UPDATE_ITEM, {
         variables: {
@@ -85,6 +87,9 @@ const EditItem = () => {
     }, [supplierData]);
 
     const submitHandler = async () => {
+        if (formValues.image) {
+            await AsyncStorage.setItem(`item.${formValues.barcode}`, image);
+        }
         const submit = await updateItem();
         if (submit?.data?.updateItem?.success) {
             alert("Item updated successfully");
@@ -121,6 +126,10 @@ const EditItem = () => {
     }
 
     useEffect(() => {
+        refetchItem();
+    }, []);
+
+    useEffect(() => {
         inputChangeHandler('id', itemData?.item?.id);
         setFormValues(itemData?.item);
         reset(itemData?.item);
@@ -133,7 +142,7 @@ const EditItem = () => {
     const mapCategory = (field: string, value: string) => {
         return categoriesSelectData?.find((category: any) => category[field] = value);
     }
-
+    
     if (itemLoading || categoryLoading || supplierLoading) return <BasicLoader />;
     
     return (
@@ -142,13 +151,13 @@ const EditItem = () => {
                 <TouchableOpacity onPress={handleChoosePhoto}>
                     <View style={localStyle.itemImageContainer}>
                         { 
-                            !image ? (
+                            (!image && !itemData?.item?.image) ? (
                                 <View style={{flex: 1, justifyContent:'center', alignItems: 'center'}}>
                                     <Ionicons name="cloud-upload-outline" size={28} color={blackLightShade}/>
                                     <Text style={{color: blackLightShade}}>Upload Image</Text>
                                 </View>
                             ) : (
-                                <Image width={250} height={250} source={{uri: image}} />
+                                <Image width={250} height={250} source={{uri: image || itemData?.item?.image}} />
                             )
                         }
                     </View>

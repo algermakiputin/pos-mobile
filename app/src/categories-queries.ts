@@ -5,7 +5,16 @@ export const GET_CATEGORIES = gql`
         categories {
             id
             name
-            description
+            itemCount
+        }
+    }
+`;
+
+export const FIND_CATEGORY = gql`
+    query Category($id: ID) {
+        category(id: $id) {
+            name
+            id
         }
     }
 `;
@@ -26,6 +35,15 @@ export const DESTROY_CATEGORY = gql`
             success
             message
             data
+        }
+    }
+`;
+
+export const UPDATE_CATEGORY = gql`
+    mutation UpdateCategory($category: CategoryInput) {
+        updateCategory(category: $category) {
+            success
+            message
         }
     }
 `;
