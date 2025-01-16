@@ -6,7 +6,7 @@ export const GET_SUPPLIER = gql`
             id
             name
             address
-            phone
+            contact
             email
         }
     }
@@ -28,6 +28,27 @@ export const STORE_SUPPLIER = gql`
             success
             message
             data
+        }
+    }
+`;
+
+export const FIND_SUPPLIER = gql`
+    query Suppliers($id: ID) {
+        supplier(id: $id) {
+            id
+            name
+            address
+            contact
+            email
+        }
+    }
+`;  
+
+export const UPDATE_SUPPLIER = gql`
+    mutation UpdateSupplier($supplier: SupplierUpdateInput) {
+        updateSupplier(supplier: $supplier) {
+            success
+            message
         }
     }
 `;

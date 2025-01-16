@@ -21,15 +21,25 @@ export default function SuppliersLayout() {
       <Stack>
         <Stack.Screen name="Suppliers" options={{
           headerTitle: "Suppliers",
+          headerTitleAlign: 'center',
           headerRight: () => (
             <TouchableOpacity onPress={newSupplierHandler}>
               <Text>New</Text>
             </TouchableOpacity>
           )
         }} />
-        <Stack.Screen name="NewSupplier" options={{ 
+        <Stack.Screen 
+          name="NewSupplier" 
+          options={{ 
             headerTitle: 'New Supplier',  
-        }} />
+          }} 
+          />
+        <Stack.Screen 
+          name="EditSupplier" 
+          options={{ 
+            headerTitle: 'Edit Supplier',  
+          }} 
+          />
       </Stack> 
     </Fragment>
   );

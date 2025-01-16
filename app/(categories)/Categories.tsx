@@ -21,7 +21,7 @@ const Categories = () => {
     const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
         <ListItem
             title={() => <Text category="s1">{ item.title }</Text>}
-            description={() => <Text category="s2">{ `Total ${item.itemCount} Items` }</Text>}
+            description={() => <Text category="s2">{ `Total ${item.itemCount ?  item.itemCount : 0} Items` }</Text>}
             accessoryRight={<RenderMenu item={item} />}
         />
     );
