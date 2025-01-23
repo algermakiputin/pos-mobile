@@ -69,7 +69,7 @@ const Categories = () => {
                     'This alert was dismissed by tapping outside of the alert dialog.',
                 ),
             },
-        );
+    );
 
     const RenderMenu = ({item} : { item: IListItem}) => {
         return (

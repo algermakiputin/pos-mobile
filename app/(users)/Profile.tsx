@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Button, Divider, Text } from "@ui-kitten/components";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import UserContext from "../context/userContext";
 import { useContext } from "react";
+import { useRouter } from "expo-router";
 
 const Profile = () => {
+  const router = useRouter();
   const { user } = useContext(UserContext);
   console.log(`user`, user);
   return (
@@ -33,12 +35,24 @@ const Profile = () => {
       </View>
       <Divider style={{marginBottom:10}}/>
       <View style={{flex: 1, flexDirection: 'row', justifyContent:'space-between', flexWrap:'wrap'}}>
-        <Button status="success" style={{width:'49%',height:50, marginBottom:10}}>Manage Users</Button>
-        <Button status="primary" style={{width:'49%',height:50, marginBottom:10}}>Logout</Button>
-        <Button status="danger" style={{width:'49%',height:50, marginBottom:10}}>Delete Profile</Button>
+        <Button 
+          status="success" 
+          style={localStyles.button}
+          onPress={() => router.navigate('/ManageUsers')}
+          >Manage Users</Button>
+        <Button status="primary" style={localStyles.button}>Logout</Button>
+        <Button status="danger" style={localStyles.button}>Delete Profile</Button>
       </View>
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  button: {
+    width:'49%',
+    height:50, 
+    marginBottom:10
+  }
+})
 
 export default Profile;

@@ -32,7 +32,7 @@ const formInputDefaultValue = {
     supplier_id: '',
     capital: '',
     price: '',
-    stocks: 0,
+    stocks: '',
     image: ''
 }
 
