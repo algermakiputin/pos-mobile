@@ -48,3 +48,22 @@ export const FIND_USER = gql`
     }
 `;
 
+export const UPDATE_USER = gql`
+    mutation UpdateUser($user: UpdateUserInput) {
+        updateUser(user: $user) {
+            success
+            message
+            data
+        }
+    }
+`;
+
+export const DESTROY_USER = gql`
+    mutation DestroyUser($id: ID) {
+        destroyUser(id: $id) {
+            success
+            message
+            data
+        }
+    }
+`;

@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { emailPattern } from "../utils/patterns";
 import { useMutation, useQuery } from "@apollo/client";
-import { FIND_USER, REGISTER } from "../src/users-queries";
+import { FIND_USER, GET_USERS, REGISTER, UPDATE_USER } from "../src/users-queries";
 import { useContext, useEffect } from "react";
 import UserContext from "../context/userContext";
 import { useLocalSearchParams } from "expo-router";
@@ -12,24 +12,23 @@ const EditUser = () => {
     const { control, handleSubmit, formState: {errors}, register, watch, reset, setValue } = useForm();
     const { user } = useContext(UserContext);
     const params = useLocalSearchParams();
-    const [ newUser, { error, loading } ] = useMutation(REGISTER);
-    const { data: userData } = useQuery(FIND_USER, { variables: { userId: params.id } });
+    const { refetch: refetchUsers } = useQuery(GET_USERS, { variables: { adminId: user.id } });
+    const [ updateUser, { error, loading } ] = useMutation(UPDATE_USER);
+    const { data: userData, refetch } = useQuery(FIND_USER, { variables: { userId: params.id } });
     const formSubmitHandler = async (data: any) => {
-        const store = await newUser({
+        const update = await updateUser({
             variables: {
                 user: {
                     ...data,
-                    staff: 1,
-                    admin_id: user.id
+                    id: params.id
                 }
             }
         });
-        console.log(`store`, store);
-        if (store?.data?.register?.id) {
-            alert("User registered  successfully");
-            reset();
+        if (update?.data?.updateUser?.success) {
+            alert("User updated successfully");
+            await refetchUsers();
         } else {
-            alert("Opps! something went wrong, please try again later.");
+            alert("Opps something went wrong, please try again later");
         }
     }
 
@@ -37,6 +36,7 @@ const EditUser = () => {
        setValue("firstName", userData?.user?.firstName);
        setValue("lastName", userData?.user?.lastName);
        setValue("email", userData?.user?.email);
+       refetch();
     }, [userData]);
     
     return (
@@ -112,8 +112,7 @@ const EditUser = () => {
                     <View style={styles.formGroup}>
                         <Input 
                             label={"Password"}
-                            placeholder="Enter password"
-                            // onBlur={onBlur}
+                            placeholder="Leave blank if not updating password"
                             value={value}
                             onChangeText={onChange}
                             secureTextEntry
@@ -121,7 +120,6 @@ const EditUser = () => {
                         { (errors as any)?.password?.message && <Text style={styles.textDanger}>{(errors as any)?.password?.message}</Text>}
                     </View> 
                 )}
-                rules={{required: 'Password is required'}}
             />
             <Controller 
                 name="confirmPassword"
@@ -135,7 +133,6 @@ const EditUser = () => {
                             onChangeText={onChange}
                             secureTextEntry
                             {...register('confirmPassword', {
-                                required: true,
                                 validate: (value) => {
                                     return value === watch('password') || 'Password does not match'
                                 }
@@ -144,7 +141,6 @@ const EditUser = () => {
                         { (errors as any)?.confirmPassword?.message && <Text style={styles.textDanger}>{(errors as any)?.confirmPassword?.message}</Text>}
                     </View> 
                 )}
-                rules={{required: 'Confirm password is required'}}
             />
             <Button onPress={handleSubmit(formSubmitHandler)}>{ loading ? 'Loading...' : 'Update' }</Button>
         </View>

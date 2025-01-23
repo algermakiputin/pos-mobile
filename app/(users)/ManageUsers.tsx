@@ -3,9 +3,9 @@ import { List, ListItem, Text } from '@ui-kitten/components';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useQuery } from '@apollo/client';
-import { GET_USERS } from '../src/users-queries';
-import { useContext } from 'react';
+import { useMutation, useQuery } from '@apollo/client';
+import { DESTROY_USER, GET_USERS } from '../src/users-queries';
+import { useContext, useEffect } from 'react';
 import UserContext from '../context/userContext';
 import { User } from '../types/userTypes';
 
@@ -18,8 +18,8 @@ interface IListItem {
 const ManageUsers = () => {
     const router = useRouter();
     const { user } = useContext(UserContext);
-    const { data } = useQuery(GET_USERS, { variables: { adminId: user.id } });
-    
+    const { data, refetch } = useQuery(GET_USERS, { variables: { adminId: user.id } });
+    const [ deleteUser ] = useMutation(DESTROY_USER);
     const userData = data?.getUsers?.map((user: User ) => ({
         id: user?.id,
         name: `${user?.firstName} ${user?.lastName}`,
@@ -51,8 +51,17 @@ const ManageUsers = () => {
             },
     );
 
-    const destroyUserHandler = (id: string) => {
-
+    const destroyUserHandler = async (id: string) => {
+        const destroy = await deleteUser({
+            variables: {
+                id
+            }
+        });
+        if (destroy?.data?.destroyUser?.success) {
+            alert("User deleted successfully");
+        } else {
+            alert("Opps! something went wrong, please try again later.");
+        }
     };
 
     const RenderMenu = ({item} : { item: IListItem}) => {
@@ -78,6 +87,10 @@ const ManageUsers = () => {
             accessoryRight={<RenderMenu item={ item }/>}
         />
     );
+
+    useEffect(() => {
+        refetch();
+    });
     
     return (
         <List
