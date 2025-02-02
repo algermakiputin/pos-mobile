@@ -13,8 +13,8 @@ const Register = () => {
         route.navigate('/Login');
     }
     const { control, handleSubmit, formState: { errors }, reset } = useForm();
-    const [ register ] = useMutation(REGISTER);
-
+    const [ register, { error } ] = useMutation(REGISTER);
+    console.log(`error`, error);
     const formSubmitHandler = async (data: any) => {
         console.log(`data`, data);
         const submit = await register({
@@ -22,9 +22,11 @@ const Register = () => {
                 user: data
             }
         });
+        console.log(`submit`, submit);
         if (submit?.data?.register?.token) {
             alert("Registered successfully");
             reset();
+            redirectToRegister();
         }
     }
 

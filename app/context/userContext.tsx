@@ -6,6 +6,7 @@ export const userDefaultValue = {
         firstName: '',
         lastName: '',
         id: '',
+        storeId: 0
     },
     setUser: () => null
 }
@@ -15,6 +16,7 @@ type User = {
     lastName: string;
     email: string;
     id: string;
+    storeId: number;
 }
 type Context = {
     user: User,
@@ -23,6 +25,7 @@ type Context = {
         firstName: string;
         lastName: string;
         id: string;
+        storeId: number;
     }>>
 }
 

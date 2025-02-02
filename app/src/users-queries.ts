@@ -20,6 +20,7 @@ export const LOGIN = gql`
             token
             firstName
             lastName
+            storeId
         }
     }
 `;

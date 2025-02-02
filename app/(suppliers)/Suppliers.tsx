@@ -37,7 +37,7 @@ const Suppliers = () => {
     const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
         <ListItem
             title={() => <Text category="s1">{item.title}</Text>}
-            description={() => <Text category="s2">{ `${item?.email} ${item.contact ? `| ${item?.contact}` : ''} ${item.address ? `| ${item.address}` : ''}` }</Text>}
+            description={() => <Text style={{flexWrap:'nowrap', paddingRight: 15}} category="s2">{ `${item?.email} ${item.contact ? `| ${item?.contact}` : ''} ${item.address ? `| ${item.address}` : ''}` }</Text>}
             accessoryRight={<RenderMenu item={item} />}
         />
     );

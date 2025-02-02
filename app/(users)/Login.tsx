@@ -18,7 +18,7 @@ const Login = () => {
     const { setUser } = useContext(UserContext);
     const [login, { loading, error }] = useMutation(LOGIN);
     const { control, handleSubmit, formState: { errors }, reset } = useForm();
-    console.log(`error`, error);
+
     const handleFormSubmit = async (data: any) => {
         const userLogin = await login({
             variables: {
@@ -29,9 +29,12 @@ const Login = () => {
             }
         });
         if (userLogin?.data?.login?.email) {
+            console.log(`userLogin`, userLogin);
             setUser(userLogin?.data?.login);
             AsyncStorage.setItem('token', userLogin?.data?.login?.token);
             route.navigate('/(tabs)');
+        } else {
+            alert("Login failed");
         }
         console.log(`userLogin`, userLogin);
     }
