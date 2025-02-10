@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
-import styles, { bodyColor } from "@/app/styles/style";
+import styles from "@/app/styles/style";
 import { Input, List, Spinner, Text} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
@@ -11,9 +11,11 @@ import { Item } from "@/app/types/item";
 import { useContext, useEffect, useState } from "react";
 import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
 import { formatAmount } from "@/app/utils/utils";
+import UserContext from "@/app/context/userContext";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
+    const userContext = useContext(UserContext);
     const { ContextMenu } = renderers;
     const [limit, setLimit] = useState(10);
     const { filters, setFilter, removeFilter } = useContext(InventoryContext);

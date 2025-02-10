@@ -16,7 +16,7 @@ const Login = () => {
         route.navigate('/Register');
     }
     const { setUser } = useContext(UserContext);
-    const [login, { loading, error }] = useMutation(LOGIN);
+    const [login, { loading }] = useMutation(LOGIN);
     const { control, handleSubmit, formState: { errors }, reset } = useForm();
 
     const handleFormSubmit = async (data: any) => {
@@ -28,6 +28,7 @@ const Login = () => {
                 }
             }
         });
+        console.log(`userLogin`, userLogin);
         if (userLogin?.data?.login?.email) {
             console.log(`userLogin`, userLogin);
             setUser(userLogin?.data?.login);

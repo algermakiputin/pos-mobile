@@ -3,9 +3,10 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
 import { Ionicons } from "@expo/vector-icons";
 import { GET_CATEGORIES, DESTROY_CATEGORY } from "../src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { useRouter } from "expo-router";
 import { Alert } from "react-native";
+import UserContext from "../context/userContext";
 
 interface IListItem {
     title: string;
@@ -14,7 +15,8 @@ interface IListItem {
 }
 
 const Categories = () => {
-    const { data, refetch } = useQuery(GET_CATEGORIES);
+    const userContext = useContext(UserContext);
+    const { data, refetch } = useQuery(GET_CATEGORIES, { variables: { userId: userContext.user.storeId }});
     const [destroyCategory] = useMutation(DESTROY_CATEGORY);
     const router = useRouter();
 

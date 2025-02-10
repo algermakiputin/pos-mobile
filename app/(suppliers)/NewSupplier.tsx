@@ -3,17 +3,26 @@ import styles from "@/app/styles/style";
 import { View, TextInput, Text, TouchableOpacity } from "react-native";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_SUPPLIER, STORE_SUPPLIER } from "../src/supplier-queries";
+import { useContext } from "react";
+import UserContext from "../context/userContext";
 
 const NewSupplier = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
     const [storeSupplier] = useMutation(STORE_SUPPLIER);
+    const userContext = useContext(UserContext);
     const { refetch } = useQuery(GET_SUPPLIER);
     const submitHandler = async (data: any) => {
+        const payload = {
+            ...data,
+            store_id: userContext?.user?.storeId
+        };
+        console.log(`payload`, payload);
         const store = await storeSupplier({
             variables: {
-                supplier: data
+                supplier: payload
             }
         });
+        console.log(`store`, store);
         if (store?.data?.storeSupplier?.success) {
             alert("Supplier saved successfully");
             reset();

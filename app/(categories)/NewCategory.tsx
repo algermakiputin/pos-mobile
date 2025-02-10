@@ -4,18 +4,25 @@ import { View, TextInput, Text, StyleSheet } from "react-native";
 import { Button } from "@ui-kitten/components";
 import { GET_CATEGORIES, STORE_CATEGORY } from "../src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
+import { useContext } from "react";
+import UserContext from "../context/userContext";
 
 const NewCategory = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
+    const userContext = useContext(UserContext);
     const [storeCategory] = useMutation(STORE_CATEGORY);
     const { refetch } = useQuery(GET_CATEGORIES);
 
     const submitHandler = async (data: any) => {
         const store = await storeCategory({
             variables: {
-                category: data
+                category: {
+                    ...data,
+                    store_id: userContext.user.storeId 
+                }
             }
         });
+        console.log(`store`, store);
         if (store?.data?.storeCategory?.success) {
             alert("Category added successfully");
             reset();

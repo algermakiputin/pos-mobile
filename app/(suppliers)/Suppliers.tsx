@@ -1,11 +1,12 @@
 import { Text, ListItem, List, Divider } from "@ui-kitten/components";
 import { DESTROY_SUPPLIER, GET_SUPPLIER } from "../src/supplier-queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRouter } from "expo-router";
 import { Alert } from "react-native";
+import UserContext from "../context/userContext";
 
 interface IListItem {
     title: string;
@@ -16,7 +17,8 @@ interface IListItem {
 }
 
 const Suppliers = () => {
-    const { data, refetch, error } = useQuery(GET_SUPPLIER);
+    const userContext = useContext(UserContext);
+    const { data, refetch } = useQuery(GET_SUPPLIER, { variables: { storeId: userContext.user.storeId }});
     const router = useRouter();
     useEffect(() => {
         refetch();

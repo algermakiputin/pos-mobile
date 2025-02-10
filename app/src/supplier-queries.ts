@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_SUPPLIER = gql`
-    query Suppliers {
-        suppliers {
+    query Suppliers($storeId: ID) {
+        suppliers(storeId: $storeId) {
             id
             name
             address
