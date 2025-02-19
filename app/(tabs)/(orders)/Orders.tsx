@@ -4,15 +4,17 @@ import { useRouter } from "expo-router";
 import styles, { primaryColor, bodyColor, primarySpotColor, secondaryColor, blackLightShade, accentColor, lighterDark } from "@/app/styles/style";
 import Button from "@/components/buttons/Button";
 import { Ionicons } from "@expo/vector-icons";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Item } from "@/app/types/item";
 import OrderContext from "./context/ordersContext";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { GET_ITEMS } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
+import UserContext from "@/app/context/userContext";
 
 const Orders = () => {
+    const userContext = useContext(UserContext);
     const route = useRouter();
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,7 +26,8 @@ const Orders = () => {
             filter: {
                 query: search,
                 categories: selectedCategory ? [selectedCategory] : [],
-                limit: 10
+                limit: 10,
+                storeId: userContext.user.storeId
             }
         }
     });
@@ -40,7 +43,7 @@ const Orders = () => {
         return 0;
     }
 
-    const renderItem = ({ item, index }: { item: Item, index: number }) => {
+    const renderItem = useCallback(({ item, index }: { item: Item, index: number }) => {
         const isSelected = (selectedIndex == index || renderQuantity(item.id));
         console.log(`the image`, item.image);
         return (
@@ -83,7 +86,7 @@ const Orders = () => {
                 </Layout>
             </TouchableOpacity>
         )
-    }
+    }, [itemsData, order]);
 
     const searchHandler = (search: string) => {
         setSearch(search);

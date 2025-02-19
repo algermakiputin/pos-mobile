@@ -1,0 +1,9 @@
+export const thin = "Inter_100Thin";
+export const extraLight = "Inter_200ExtraLight";
+export const light = "Inter_300Light";
+export const regular = "Inter_400Regular";
+export const medium = "Inter_500Medium";
+export const semiBold = "Inter_600SemiBold";
+export const bold = "Inter_700Bold";
+export const extraBold = "Inter_800ExtraBold";
+export const black = "Inter_900Black";

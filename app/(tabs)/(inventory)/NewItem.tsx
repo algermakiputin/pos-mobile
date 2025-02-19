@@ -4,13 +4,14 @@ import { useForm, Controller } from "react-hook-form";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Layout, Button } from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { STORE_ITEM } from "@/app/src/item-queries";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserContext from "@/app/context/userContext";
 
 type FormInput = {
     barcode: string;
@@ -37,11 +38,15 @@ const formInputDefaultValue = {
 }
 
 const NewItem = () => {
+    const userContext = useContext(UserContext);
     const { control, handleSubmit, formState: {errors} } = useForm();
     const [image, setImage] = useState('');
     const [formValues, setFormValues] = useState<FormInput>();
-    const { loading: categoryLoading, error: categoryError, data: categoriesData } = useQuery(GET_CATEGORIES);
-    const { loading: supplierLoading, error: supplierError, data: supplierData } = useQuery(GET_SUPPLIER);
+    const variables = {
+        storeId: userContext.user.storeId
+    }
+    const { data: categoriesData } = useQuery(GET_CATEGORIES, { variables });
+    const { data: supplierData } = useQuery(GET_SUPPLIER, { variables }); 
     
     const supplierSelectData = useMemo(() => {
         return supplierData?.suppliers?.map((supplier: any) => ({
@@ -83,15 +88,19 @@ const NewItem = () => {
         }
     }
 
-    const [storeItem, {error, loading}] = useMutation(STORE_ITEM, {
-        variables: {
-            item: formValues
-        }
-    })
+    const [storeItem, { loading }] = useMutation(STORE_ITEM)
 
     const submitHandler = async (data: any) => {
         storeImage(String(formValues?.barcode), image);
-        const store = await storeItem();
+        const store = await storeItem({
+            variables: {
+                item: {
+                    ...formValues,
+                    storeId: userContext.user.storeId,
+                    image: image
+                }
+            }
+        });
         console.log(`store`, store);
         if (store?.data?.storeItem?.success) {
             alert("Added Successfully");
@@ -105,6 +114,10 @@ const NewItem = () => {
             [key]: value
         }))
     }
+
+    useEffect(() => {
+        console.log(`test`);
+    }, []);
 
     return (
         <ScrollView>

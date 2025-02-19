@@ -8,10 +8,15 @@ import { useQuery } from "@apollo/client";
 import InventoryContext from "./context/InventoryContext";
 import { ObjectValue } from "./context/InventoryContext";
 import BasicLoader from "@/components/Loader/BasicLoader";
+import UserContext from "@/app/context/userContext";
 
 const ItemFilter = () => {
-    const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES);
-    const { data: suppliersData, loading: supplierLoading } = useQuery(GET_SUPPLIER);
+    const userContext = useContext(UserContext);
+    const variables = {
+        storeId: userContext.user.storeId
+    }
+    const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES, { variables });
+    const { data: suppliersData, loading: supplierLoading } = useQuery(GET_SUPPLIER, { variables } );
     const { selectedCategory, setSelectedCategory, selectedSupplier, setSelectedSupplier } = useContext(InventoryContext);
     const categories = useMemo(function() {
         return categoriesData?.categories.map((category: any) => ({

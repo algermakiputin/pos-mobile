@@ -12,6 +12,8 @@ import { useContext, useEffect, useState } from "react";
 import InventoryContext, { ObjectFilterEnum } from "./context/InventoryContext";
 import { formatAmount } from "@/app/utils/utils";
 import UserContext from "@/app/context/userContext";
+import { semiBold } from "@/app/styles/values";
+import { useIsFocused } from "@react-navigation/native";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
@@ -25,12 +27,13 @@ const InventoryHomePage = () => {
                 query: filters.query,
                 categories: filters.categories?.map(category => category?.id),
                 suppliers: filters.suppliers?.map(supplier => supplier.id),
-                limit
+                limit,
+                storeId: userContext.user.storeId
             }
         },
     }); 
     const [destroyItem] = useMutation(DESTROY_ITEM);
-
+    const isFocused = useIsFocused();
     const renderSearchIcon = () => {
         return <Ionicons name="search-outline" />
     } 
@@ -49,8 +52,11 @@ const InventoryHomePage = () => {
     }
 
     useEffect(() => {
-        refetch();
-    }, []);
+        if (isFocused) {
+            console.log(`refetching??`);
+            refetch();
+        }
+    }, [isFocused]);
 
     const showAlert = (id: string) =>
         Alert.alert(
@@ -75,19 +81,20 @@ const InventoryHomePage = () => {
                     'This alert was dismissed by tapping outside of the alert dialog.',
                 ),
             },
-        );
+    );
 
     const renderItem = ({item} : { item: Item}) => {
         return (
             <View style={styles.card}>
-                <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
-                <Text style={style.itemTitle}>{ item.name }</Text>
+                {/* <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
+                <Text style={style.itemTitle}>{ item.name }</Text> */}
                 <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
                     <View style={{}}>
                         {
                             item.image ? (
-                                <View style={{borderRadius: 15, borderWidth: 1, borderColor: '#eee'}}>
-                                    <Image style={{borderRadius: 15}} source={{uri: item.image}} height={75} width={75}/>
+                                <View style={{borderRadius: 15, borderWidth: 1, borderColor: '#eee', position:'relative'}}>
+                                    {/* <View style={{position:'absolute', top:0, left: 0, backgroundColor: 'rgba(0,0,0,0.1)', zIndex: 10, height:'100%', width: '100%', borderRadius:15}}></View> */}
+                                    <Image style={{borderRadius: 15}} source={{uri: item.image}} height={70} width={70}/>
                                 </View>
                             ) : (
                                 <View style={style.itemAvatar}>
@@ -97,8 +104,10 @@ const InventoryHomePage = () => {
                         }
                     </View>
                     <View style={[style.productDetailsColumn]}>
-                        <Text category="s2" style={styles.normalText}>Supplier: <Text style={style.textValue}>{item.supplierName}</Text></Text>
-                        <Text category="s2" style={styles.normalText}>Category: <Text style={style.textValue}>{item.categoryName}</Text></Text>
+                        <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
+                        <Text style={style.itemTitle}>{ item.name }</Text>
+                        {/* <Text category="s2" style={styles.normalText}>Supplier: <Text style={style.textValue}>{item.supplierName}</Text></Text>
+                        <Text category="s2" style={styles.normalText}>Category: <Text style={style.textValue}>{item.categoryName}</Text></Text> */}
                         <Text category="s2" style={styles.normalText}>Stocks: <Text style={style.textValue}>{item.stocks}</Text></Text>
                         <Text category="s1" style={style.price}>{ formatAmount(Number(item.price)) }</Text>
                     </View> 
@@ -122,7 +131,7 @@ const InventoryHomePage = () => {
     const searchHandler = (value: string) => {
         setFilter('query', value);
     } 
-  
+    console.log(`error`, error);
     if (error) return <View><Text>Error</Text></View>;
     return ( 
         <View style={styles.container}>
@@ -232,8 +241,7 @@ const style = StyleSheet.create({
     },
     itemTitle: {
         fontSize: 18,
-        fontFamily: 'Inter_700Bold',
-        marginBottom: 10
+        fontFamily: 'Inter_700Bold'
     },
     itemAvatar: {
         height:75,
@@ -265,7 +273,7 @@ const style = StyleSheet.create({
     },
     price: {
         marginTop: 5,
-        fontFamily: 'Inter_700Bold'
+        fontFamily: semiBold
     },
     filterLabel: {
         backgroundColor: '#ccc', 

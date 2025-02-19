@@ -5,12 +5,20 @@ import Dropdown from "@/components/dropdown/Dropdown";
 import { GET_SALES_ANALYTICS } from "@/app/src/sales-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
-import { Fragment, useEffect } from "react";
+import { Fragment, useContext, useEffect } from "react";
 import { useRouter } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
+import UserContext from "@/app/context/userContext";
 
 const Sales = () => {
+    const userContext = useContext(UserContext);
     const { width } = Dimensions.get('window');
-    const { data: salesData, refetch } = useQuery(GET_SALES_ANALYTICS);
+    const { data: salesData, refetch } = useQuery(GET_SALES_ANALYTICS, { variables: {
+        filter: {
+            storeId: userContext.user.storeId
+        }
+    }});
+    const isFocused = useIsFocused();
     const route = useRouter();
     const renderItemAccessory = (total: number): React.ReactElement => (
         <View>
@@ -39,8 +47,9 @@ const Sales = () => {
     }
 
     useEffect(() => {
-        refetch();
-    }, [])
+        console.log(`focused`, isFocused);
+        isFocused && refetch();
+    }, [isFocused])
 
     return (
         <Fragment>
@@ -67,7 +76,7 @@ const Sales = () => {
                                 </Layout>
                                 <Layout style={style.flexItem}>
                                     <Text style={style.columnLabel}>Item Sold</Text>
-                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold }</Text>
+                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold ?? 0 }</Text>
                                 </Layout>
                                 <Layout style={style.flexItem}>
                                     <Text style={style.columnLabel}>Net Sales</Text>
@@ -86,6 +95,7 @@ const Sales = () => {
                             renderItem={renderItem}
                             ItemSeparatorComponent={Divider}
                             style={{height: '100%'}}
+                            ListEmptyComponent={<Text style={{padding: 15, textAlign: 'center'}}>No sales record found.</Text>}
                         />
                     </Layout>
                     

@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const STORE_SALES = gql`
-    mutation StoreItem($sales: SalesInput) {
+    mutation StoreSales($sales: SalesInput) {
         storeSales(sales: $sales) {
             success
             message
@@ -10,7 +10,7 @@ export const STORE_SALES = gql`
 `;
 
 export const GET_SALES_ANALYTICS = gql`
-    query GetSales($filter: String) {
+    query GetSales($filter: getSalesInput) {
         getSales(filter: $filter) {
             totalEarnings
             itemSold

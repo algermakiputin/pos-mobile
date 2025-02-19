@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_CATEGORIES = gql`
-    query Categories {
-        categories {
+    query Categories($storeId: ID) {
+        categories(storeId: $storeId) {
             id
             name
             itemCount

@@ -10,8 +10,10 @@ import { CartLineItem } from "@/app/types/order";
 import { formatAmount } from "@/app/utils/utils";
 import { STORE_SALES } from "@/app/src/sales-queries";
 import { useMutation } from "@apollo/client";
+import UserContext from "@/app/context/userContext";
 
 const Summary = () => {
+  const userContext = useContext(UserContext);
   const route = useRouter();
   const {order, orderTotal} = useContext(OrderContext);
   
@@ -20,19 +22,28 @@ const Summary = () => {
     </View>
   );
 
-  const [storeSales] = useMutation(STORE_SALES, { variables : {
-    sales: order
-  }})
+  const [storeSales, { error }] = useMutation(STORE_SALES)
   
   const renderItemAccessory = (total: number): React.ReactElement => (
     <Layout>
         <Text style={{fontFamily: 'Inter_400Regular'}}>{formatAmount(total)}</Text>
     </Layout>
   );
-    
+
   const submitHandler = async () => {
-    await storeSales();
-    route.navigate('/receipt');
+    try {
+      const variables = {
+        sales: {
+          ...order,
+          storeId: userContext.user.storeId
+        }
+      };
+      await storeSales( { variables } );
+      route.navigate('/receipt');
+    } catch (error) {
+      console.log(`catch error`, error);
+      alert("Opps! Something went wrong, please try again later.");
+    }
   }
   
   const renderItem = ({ item, index }: { item: CartLineItem; index: number }): React.ReactElement => (

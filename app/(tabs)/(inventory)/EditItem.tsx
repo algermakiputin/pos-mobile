@@ -7,12 +7,13 @@ import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocalSearchParams } from 'expo-router'
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
 import { Layout, Button, Input } from "@ui-kitten/components";
 import BasicLoader from "@/components/Loader/BasicLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserContext from "@/app/context/userContext";
 
 type FormInput = {
     barcode: string;
@@ -41,6 +42,7 @@ const formInputDefaultValue = {
 }
 
 const EditItem = () => {
+    const userContext = useContext(UserContext);
     const [image, setImage] = useState('');
     const [formValues, setFormValues] = useState<FormInput>(formInputDefaultValue);
     const params = useLocalSearchParams();
@@ -69,9 +71,11 @@ const EditItem = () => {
     })
 
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
-    const { data: categoriesData, loading: categoryLoading } = useQuery(GET_CATEGORIES);
-    const { data: supplierData, loading: supplierLoading } = useQuery(GET_SUPPLIER);
- 
+    const variables = {
+        storeId: userContext.user.storeId
+    }
+    const { data: categoriesData, loading: categoryLoading } = useQuery(GET_CATEGORIES, { variables });
+    const { data: supplierData, loading: supplierLoading } = useQuery(GET_SUPPLIER, { variables });
     const categoriesSelectData = useMemo(() => {
         return categoriesData?.categories?.map((value: any) => ({
             value: value?.name,
