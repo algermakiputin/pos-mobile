@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import styles, { primaryColor, bodyColor, primarySpotColor, secondaryColor, blackLightShade, accentColor, lighterDark } from "@/app/styles/style";
 import Button from "@/components/buttons/Button";
 import { Ionicons } from "@expo/vector-icons";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Item } from "@/app/types/item";
 import OrderContext from "./context/ordersContext";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
@@ -12,16 +12,18 @@ import { GET_ITEMS } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
 import UserContext from "@/app/context/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 const Orders = () => {
     const userContext = useContext(UserContext);
     const route = useRouter();
+    const isFocused = useIsFocused();
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const { order, quantityHandler, orderTotal} = useContext(OrderContext);
     const [selectedIndex, setSelectedIndex] = useState<number>();
-    const { data: categoriesData } = useQuery(GET_CATEGORIES);
-    const { data: itemsData } = useQuery(GET_ITEMS, {
+    const { data: categoriesData } = useQuery(GET_CATEGORIES, { variables: { storeId: userContext.user.storeId } });
+    const { data: itemsData, refetch } = useQuery(GET_ITEMS, {
         variables: {
             filter: {
                 query: search,
@@ -31,8 +33,9 @@ const Orders = () => {
             }
         }
     });
+
     const processOrderHandler = () => {
-        if (order?.cart?.lineItems?.length) route.navigate('/(orders)/summary');
+        if (order?.cart?.lineItems?.length) route.navigate('/summary');
     }
 
     const renderQuantity = (itemId: string) => {
@@ -43,9 +46,13 @@ const Orders = () => {
         return 0;
     }
 
+    useEffect(() => {
+        if (isFocused) {
+            refetch();
+        }
+    }, [isFocused]);
     const renderItem = useCallback(({ item, index }: { item: Item, index: number }) => {
         const isSelected = (selectedIndex == index || renderQuantity(item.id));
-        console.log(`the image`, item.image);
         return (
             <TouchableOpacity onPress={() => setSelectedIndex(index)}>
                 <Layout style={[style.item, isSelected ? {borderWidth: 1, borderColor: lighterDark} : {}]}>
@@ -86,7 +93,7 @@ const Orders = () => {
                 </Layout>
             </TouchableOpacity>
         )
-    }, [itemsData, order]);
+    }, [itemsData, order, selectedIndex]);
 
     const searchHandler = (search: string) => {
         setSearch(search);
@@ -117,7 +124,7 @@ const Orders = () => {
                 </ScrollView>
             </View>
             <View style={[styles.container, {paddingTop: 10}]}>
-                <Text style={{marginBottom: 10, color: '#777', fontFamily: 'Inter_400Regular'}}>Total 342 Items</Text>
+                <Text style={{marginBottom: 10, color: '#777', fontFamily: 'Inter_400Regular'}}>Total {itemsData?.items?.count} Items</Text>
                 <List
                     style={style.listStyle}
                     data={itemsData?.items?.data}
@@ -179,12 +186,14 @@ const style = StyleSheet.create({
         marginBottom: 5,
     },
     category: {
-        padding:10,
+        padding: 25,
+        paddingTop: 15,
+        paddingBottom: 15,
         borderWidth: 1,
         borderColor: '#ddd',
-        borderRadius: 15,
-        width: 135,
+        borderRadius: 15, 
         marginRight: 10,
+        width: 120,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

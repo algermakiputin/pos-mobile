@@ -3,10 +3,11 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
 import { Ionicons } from "@expo/vector-icons";
 import { GET_CATEGORIES, DESTROY_CATEGORY } from "../src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { useRouter } from "expo-router";
 import { Alert } from "react-native";
 import UserContext from "../context/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 interface IListItem {
     title: string;
@@ -16,10 +17,10 @@ interface IListItem {
 
 const Categories = () => {
     const userContext = useContext(UserContext);
-    const { data, refetch } = useQuery(GET_CATEGORIES, { variables: { userId: userContext.user.storeId }});
+    const isFocused = useIsFocused();
+    const { data, refetch } = useQuery(GET_CATEGORIES, { variables: { storeId: userContext.user.storeId }});
     const [destroyCategory] = useMutation(DESTROY_CATEGORY);
     const router = useRouter();
-
     const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
         <ListItem
             title={() => <Text category="s1">{ item.title }</Text>}
@@ -88,6 +89,10 @@ const Categories = () => {
             </Menu>
         )
     }
+
+    useEffect(() => {
+        isFocused && refetch();
+    }, [isFocused]);
 
     return (
         <List

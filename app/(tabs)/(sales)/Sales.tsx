@@ -1,21 +1,24 @@
 import { ScrollView, StyleSheet, View, Dimensions } from "react-native";
 import styles, { secondaryTextColor } from "@/app/styles/style";
-import { IconElement, List, ListItem, Layout, Text, Divider } from '@ui-kitten/components';
+import { IconElement, List, ListItem, Layout, Text, Divider, Spinner } from '@ui-kitten/components';
 import Dropdown from "@/components/dropdown/Dropdown";
 import { GET_SALES_ANALYTICS } from "@/app/src/sales-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
-import { Fragment, useContext, useEffect } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 import UserContext from "@/app/context/userContext";
+import BasicLoader from "@/components/Loader/BasicLoader";
 
 const Sales = () => {
     const userContext = useContext(UserContext);
     const { width } = Dimensions.get('window');
-    const { data: salesData, refetch } = useQuery(GET_SALES_ANALYTICS, { variables: {
+    const [dateRange, setDateRange] = useState("today");
+    const { data: salesData, refetch, loading } = useQuery(GET_SALES_ANALYTICS, { variables: {
         filter: {
-            storeId: userContext.user.storeId
+            storeId: userContext.user.storeId,
+            dateRange
         }
     }});
     const isFocused = useIsFocused();
@@ -46,8 +49,11 @@ const Sales = () => {
         route.navigate({pathname: "/SalesDetails", params: { transaction_number }});
     }
 
+    const selectDateHandler = (date: { title: string }) => {
+        setDateRange(date.title);
+    }
+
     useEffect(() => {
-        console.log(`focused`, isFocused);
         isFocused && refetch();
     }, [isFocused])
 
@@ -63,7 +69,7 @@ const Sales = () => {
                                 </Layout>
                                 <Layout style={[styles.flex, {alignItems: 'flex-end', justifyContent: 'center'}]} level="1">
                                     <View>
-                                        <Dropdown placeholder="Today" data={dropdownData} width={120} />
+                                        <Dropdown placeholder="Today" data={dropdownData} width={120} onSelect={selectDateHandler} />
                                     </View>
                                 </Layout>
                             </Layout>
@@ -76,7 +82,7 @@ const Sales = () => {
                                 </Layout>
                                 <Layout style={style.flexItem}>
                                     <Text style={style.columnLabel}>Item Sold</Text>
-                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold ?? 0 }</Text>
+                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold }</Text>
                                 </Layout>
                                 <Layout style={style.flexItem}>
                                     <Text style={style.columnLabel}>Net Sales</Text>
@@ -87,18 +93,21 @@ const Sales = () => {
                     </View> 
                 </View>
                 <View style={style.transactionsContainer}>
-                    <Layout style={{borderRadius: 10}}>
-                        <Text style={[styles.sectionHeader, {paddingLeft: 15,paddingTop:15}]}>Recent Transaction</Text>
-                        <Divider/>
-                        <List
-                            data={salesData?.getSales?.transactions}
-                            renderItem={renderItem}
-                            ItemSeparatorComponent={Divider}
-                            style={{height: '100%'}}
-                            ListEmptyComponent={<Text style={{padding: 15, textAlign: 'center'}}>No sales record found.</Text>}
-                        />
-                    </Layout>
-                    
+                    {
+                        loading ? <BasicLoader /> : (
+                            <Layout style={{borderRadius: 10}}>
+                                <Text style={[styles.sectionHeader, {paddingLeft: 15,paddingTop:15}]}>Transaction</Text>
+                                <Divider/>
+                                <List
+                                    data={salesData?.getSales?.transactions}
+                                    renderItem={renderItem}
+                                    ItemSeparatorComponent={Divider}
+                                    style={{height: '100%'}}
+                                    ListEmptyComponent={<Text style={{padding: 15, textAlign: 'center'}}>No sales record found.</Text>}
+                                />
+                            </Layout>
+                        )
+                    }
                 </View>
             </View>
         </Fragment>

@@ -2,15 +2,58 @@ import { Ionicons } from "@expo/vector-icons";
 import { Button, Divider, Text } from "@ui-kitten/components";
 import { StyleSheet, View } from "react-native";
 import UserContext from "../context/userContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "expo-router";
+import { userDefaultValue } from "../context/userContext";
+import { DESTROY_USER } from "../src/users-queries";
+import { useMutation } from "@apollo/client";
+import Prompt from "@/components/prompt/Prompt";
 
 const Profile = () => {
   const router = useRouter();
-  const { user } = useContext(UserContext);
-  console.log(`user`, user);
+  const { user, setUser } = useContext(UserContext);
+  const [showDeleteProfileAlert, setShowDeleteProfileAlert] = useState(false);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [deleteUser] = useMutation(DESTROY_USER);
+
+  const logoutHandler = () => {
+    setUser(userDefaultValue.user);
+    router.navigate('/Login');
+  }
+
+  const deleteProfileHandler = () => {
+    
+  }
+
+  const toggleDeleteProfilePrompt = () => {
+    setShowDeleteProfileAlert(!showDeleteProfileAlert);
+  }
+
+  const toggleLogoutAlert = () => {
+    setShowLogoutAlert(!showLogoutAlert);
+  }
+
+  const deleteProfile = () => {
+    console.log(`delete profile ok`);
+    toggleDeleteProfilePrompt();
+  }
+
   return (
     <View style={{backgroundColor:'#fff', padding: 20, flex: 1}}>
+      <Prompt 
+        showPrompt={showDeleteProfileAlert} 
+        setShowPrompt={toggleDeleteProfilePrompt} 
+        onConfirm={deleteProfile} 
+        message="Are you sure you want to delete your profile?"
+        description="Your profile will be permanently deleted."
+        />
+      <Prompt 
+        showPrompt={showLogoutAlert} 
+        setShowPrompt={toggleLogoutAlert} 
+        onConfirm={logoutHandler} 
+        message="Are you sure you want to logout?"
+        description="You will be logout"
+        />
       <View style={{width:90, height: 90, alignSelf: 'center', backgroundColor:'#333', borderRadius: 100}}>
       </View>
       <Text style={{textAlign:'center', marginTop: 10,marginBottom: 20}}>{ user.firstName } { user.lastName }</Text>
@@ -40,8 +83,8 @@ const Profile = () => {
           style={localStyles.button}
           onPress={() => router.navigate('/ManageUsers')}
           >Manage Users</Button>
-        <Button status="primary" style={localStyles.button}>Logout</Button>
-        <Button status="danger" style={localStyles.button}>Delete Profile</Button>
+        <Button status="primary" style={localStyles.button} onPress={toggleLogoutAlert}>Logout</Button>
+        <Button status="danger" style={localStyles.button} onPress={toggleDeleteProfilePrompt}>Delete Profile</Button>
       </View>
     </View>
   );

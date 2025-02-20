@@ -14,6 +14,7 @@ import { formatAmount } from "@/app/utils/utils";
 import UserContext from "@/app/context/userContext";
 import { semiBold } from "@/app/styles/values";
 import { useIsFocused } from "@react-navigation/native";
+import GenericErrorMessage from "@/components/error/GenericErrorMessage";
 
 const InventoryHomePage = () => {
     const router = useRouter(); 
@@ -131,8 +132,8 @@ const InventoryHomePage = () => {
     const searchHandler = (value: string) => {
         setFilter('query', value);
     } 
-    console.log(`error`, error);
-    if (error) return <View><Text>Error</Text></View>;
+    
+    if (error) return <GenericErrorMessage />;
     return ( 
         <View style={styles.container}>
             <View style={style.filterWrapper}>

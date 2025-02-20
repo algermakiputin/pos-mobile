@@ -25,7 +25,7 @@ export default function HomeScreen() {
     <ScrollView>
       <View style={styles.container}>
         <View style={localStyles.topWrapper}>
-          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, { user.firstName }!</Text>
+          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, <Text category="h6" style={{color: primaryColor}}>{ user.firstName }!</Text></Text>
           <TouchableOpacity onPress={() => route.navigate('/Profile')}>
             <Ionicons style={{marginLeft: -25}} size={26} name="person-circle-outline" />
           </TouchableOpacity>

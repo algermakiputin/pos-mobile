@@ -8,7 +8,7 @@ const getToken = async () => {
 }
 
 const httpLink = createHttpLink({
-    //uri: 'http://192.168.1.3:3333/'
+    //uri: 'http://192.168.1.98:3333/'
     uri: 'http://172.20.10.2:3333/'
 });
 

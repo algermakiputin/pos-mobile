@@ -11,7 +11,6 @@ const NewCategory = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
     const userContext = useContext(UserContext);
     const [storeCategory] = useMutation(STORE_CATEGORY);
-    const { refetch } = useQuery(GET_CATEGORIES);
 
     const submitHandler = async (data: any) => {
         const store = await storeCategory({
@@ -22,11 +21,9 @@ const NewCategory = () => {
                 }
             }
         });
-        console.log(`store`, store);
         if (store?.data?.storeCategory?.success) {
             alert("Category added successfully");
-            reset();
-            await refetch();
+            reset(); 
         }
     };
 
