@@ -100,6 +100,7 @@ const Categories = () => {
             data={categoriesData}
             ItemSeparatorComponent={Divider}
             renderItem={renderItem}
+            ListEmptyComponent={<Text style={{padding: 20}}>Your categories list is empty</Text>}
         />
     );
 }

@@ -70,8 +70,8 @@ export const DESTROY_ITEM = gql`
 `;
 
 export const GET_SUMMARY = gql`
-    query InventorySummary {
-        inventorySummary {
+    query InventorySummary($storeId: ID!) {
+        inventorySummary(storeId: $storeId) {
             totalItems
             capital
             categories

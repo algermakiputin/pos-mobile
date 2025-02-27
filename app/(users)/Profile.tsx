@@ -21,8 +21,12 @@ const Profile = () => {
     router.navigate('/Login');
   }
 
-  const deleteProfileHandler = () => {
-    
+  const deleteProfileHandler = async (id: string) => {
+    console.log(`deleting profile`);
+    const destroy = await deleteUser({variables: { id: user.id }});
+    console.log(`destroy`, destroy);
+    alert("Profile Delete Successfully");
+    router.navigate('/Login');
   }
 
   const toggleDeleteProfilePrompt = () => {
@@ -33,17 +37,12 @@ const Profile = () => {
     setShowLogoutAlert(!showLogoutAlert);
   }
 
-  const deleteProfile = () => {
-    console.log(`delete profile ok`);
-    toggleDeleteProfilePrompt();
-  }
-
   return (
     <View style={{backgroundColor:'#fff', padding: 20, flex: 1}}>
       <Prompt 
         showPrompt={showDeleteProfileAlert} 
         setShowPrompt={toggleDeleteProfilePrompt} 
-        onConfirm={deleteProfile} 
+        onConfirm={deleteProfileHandler} 
         message="Are you sure you want to delete your profile?"
         description="Your profile will be permanently deleted."
         />

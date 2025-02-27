@@ -4,9 +4,12 @@ import { StyleSheet, ScrollView } from "react-native";
 import { GET_SUMMARY } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
+import { useContext } from "react";
+import UserContext from "@/app/context/userContext";
 
 const InventorySummary = () => {
-    const { data: summary } = useQuery(GET_SUMMARY);
+    const userContext = useContext(UserContext);
+    const { data: summary } = useQuery(GET_SUMMARY, { variables: { storeId: userContext.user.storeId } });
     return (
         <Layout style={localStyles.cardContainer}>
             <Text style={localStyles.cardHeaderText}>Inventory Summary</Text>

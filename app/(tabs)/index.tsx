@@ -4,23 +4,31 @@ import InventorySummary from "@/components/cards/InventorySummary";
 import QuickMenu from "@/components/navigation/QuickMenu";
 import styles, { lighterDark, primaryColor, primarySpotColor } from "../styles/style";
 import { BarChart } from "react-native-gifted-charts";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { GET_SALES_OVERVIEW } from "../src/sales-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "../utils/utils";
 import { useRouter } from "expo-router";
 import UserContext from "../context/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function HomeScreen() {
-  const [containerWidth, setContainerWidth] = useState(0);
-  const { data: salesOverViewData } = useQuery(GET_SALES_OVERVIEW);
-  const chartData = salesOverViewData?.getSalesOverview?.data.map((value: number, index:  number) => ({
-    value: value,
-    label: salesOverViewData?.getSalesOverview?.keys[index]
-  }));
-  const route = useRouter();
   const { user } = useContext(UserContext);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const route = useRouter();
+  const isFocused = useIsFocused();
+  const { data: salesOverViewData, refetch } = useQuery(GET_SALES_OVERVIEW, { variables: { storeId: user.storeId }});
+  const chartData = useMemo(() => {
+    return salesOverViewData?.getSalesOverview?.data.map((value: number, index:  number) => ({
+      value: value,
+      label: salesOverViewData?.getSalesOverview?.keys[index]
+    }));
+  },[salesOverViewData]);
+  
+  useEffect(() => {
+    isFocused && refetch();
+  }, [isFocused]);
   return ( 
     <ScrollView>
       <View style={styles.container}>

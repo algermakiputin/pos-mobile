@@ -103,6 +103,7 @@ const Suppliers = () => {
             data={supplierData}
             ItemSeparatorComponent={Divider}
             renderItem={renderItem}
+            ListEmptyComponent={<Text style={{padding: 20}}>Your categories list is empty</Text>}
         />
     );
 }

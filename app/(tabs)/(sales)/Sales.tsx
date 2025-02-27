@@ -82,7 +82,7 @@ const Sales = () => {
                                 </Layout>
                                 <Layout style={style.flexItem}>
                                     <Text style={style.columnLabel}>Item Sold</Text>
-                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold }</Text>
+                                    <Text style={[style.amountLabel, style.labelBorderRight]}>{ salesData?.getSales?.itemSold ?? 0 }</Text>
                                 </Layout>
                                 <Layout style={style.flexItem}>
                                     <Text style={style.columnLabel}>Net Sales</Text>
