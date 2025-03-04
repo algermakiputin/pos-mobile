@@ -22,7 +22,7 @@ const Summary = () => {
     </View>
   );
 
-  const [storeSales, { error }] = useMutation(STORE_SALES)
+  const [storeSales] = useMutation(STORE_SALES)
   
   const renderItemAccessory = (total: number): React.ReactElement => (
     <Layout>

@@ -86,7 +86,10 @@ export default function OrdersLayout() {
             name="Orders"
             options={{
               headerTitle: 'New Order',
-              headerTitleAlign: 'center'
+              headerTitleAlign: 'center',
+              headerLeft: () => {
+                return <Fragment></Fragment>
+              }
             }}
             />
           <Stack.Screen

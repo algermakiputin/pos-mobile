@@ -118,6 +118,7 @@ const InventoryHomePage = () => {
                         <Ionicons name="ellipsis-vertical-outline" size={18} />
                     </MenuTrigger>
                     <MenuOptions>
+                        <MenuOption onSelect={() => router.navigate({ pathname: '/StockIn', params: { id: item.id }})} text='Stock In' />
                         <MenuOption onSelect={() => router.navigate({ pathname: '/ViewItem', params: { id: item.id }})} text='View' />
                         <MenuOption onSelect={() => router.navigate({pathname: routes.editItem as any, params: { id: item.id }})}  text="Edit"/>
                         <MenuOption onSelect={() => showAlert(item.id)} >

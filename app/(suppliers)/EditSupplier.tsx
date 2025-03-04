@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_SUPPLIER, UPDATE_SUPPLIER } from "../src/supplier-queries";
 import { useLocalSearchParams } from "expo-router";
 import { FIND_SUPPLIER } from "../src/supplier-queries";
-import { Input } from "@ui-kitten/components";
+import { Button, Input } from "@ui-kitten/components";
 import { useEffect } from "react";
 
 const EditSupplier = () => {
@@ -15,16 +15,16 @@ const EditSupplier = () => {
             id: params.id
         }
     });
-    console.log(`data supplier`, data);
-    const { control, handleSubmit, formState: {errors}, reset } = useForm({
-        defaultValues: {
-            name: data?.supplier?.name,
-            address: data?.supplier?.address,
-            email: data?.supplier?.email,
-            contact: data?.supplier?.contact
-        }
-    });
+  
+    const { control, handleSubmit, formState: {errors}, reset, setValue } = useForm();
     const [ update, { error } ] = useMutation(UPDATE_SUPPLIER);
+
+    useEffect(() => {
+        setValue("name", data?.supplier?.name);
+        setValue("address", data?.supplier?.address);
+        setValue("email", data?.supplier?.email);
+        setValue("contact", data?.supplier?.contact);
+    }, [data]);
 
     const submitHandler = async (formData: any) => {
         const params = {
@@ -59,8 +59,7 @@ const EditSupplier = () => {
                                 placeholder="Supplier Name" 
                                 // style={styles.input}
                                 onBlur={onBlur}
-                                value={value}
-                                defaultValue={data?.supplier?.name}
+                                value={value} 
                                 onChangeText={onChange}
                             />
                             { (errors as any)?.name?.message && <Text style={styles.textDanger}>{(errors as any)?.name?.message}</Text>}
@@ -78,8 +77,7 @@ const EditSupplier = () => {
                                 placeholder="Email" 
                                 // style={styles.input}
                                 onBlur={onBlur}
-                                value={value}
-                                defaultValue={data?.supplier?.email}
+                                value={value} 
                                 onChangeText={onChange}
                             />
                             { (errors as any)?.email?.message && <Text style={styles.textDanger}>{(errors as any)?.email?.message}</Text>}
@@ -95,8 +93,7 @@ const EditSupplier = () => {
                                 label={"Phone Number"}
                                 placeholder="Phone Number" 
                                 // style={styles.input}
-                                onBlur={onBlur}
-                                defaultValue={data?.supplier?.contact}
+                                onBlur={onBlur} 
                                 value={value}
                                 onChangeText={onChange}
                             />
@@ -114,19 +111,16 @@ const EditSupplier = () => {
                                 placeholder="Address" 
                                 // style={styles.input}
                                 onBlur={onBlur}
-                                value={value}
-                                defaultValue={data?.supplier?.address}
+                                value={value} 
                                 onChangeText={onChange}
                             />
                             { (errors as any)?.address?.message && <Text style={styles.textDanger}>{(errors as any)?.address?.message}</Text>}
                         </View> 
                     )}
                 />
-                <TouchableOpacity onPress={handleSubmit(submitHandler)}>
-                    <View style={styles.button}>
-                        <Text>Save Supplier</Text>
-                    </View>
-                </TouchableOpacity>
+                <Button onPress={handleSubmit(submitHandler)}>
+                    Save Supplier
+                </Button> 
             </View>
         </View>
     );

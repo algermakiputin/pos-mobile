@@ -4,12 +4,18 @@ import { StyleSheet, ScrollView } from "react-native";
 import { GET_SUMMARY } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
 import { formatAmount } from "@/app/utils/utils";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import UserContext from "@/app/context/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 const InventorySummary = () => {
+    const isFocused = useIsFocused();
     const userContext = useContext(UserContext);
-    const { data: summary } = useQuery(GET_SUMMARY, { variables: { storeId: userContext.user.storeId } });
+    const { data: summary, refetch } = useQuery(GET_SUMMARY, { variables: { storeId: userContext.user.storeId } });
+
+    useEffect(() => {
+        isFocused && refetch();
+    }, [isFocused]);
     return (
         <Layout style={localStyles.cardContainer}>
             <Text style={localStyles.cardHeaderText}>Inventory Summary</Text>

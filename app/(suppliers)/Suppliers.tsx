@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRouter } from "expo-router";
 import { Alert } from "react-native";
 import UserContext from "../context/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 interface IListItem {
     title: string;
@@ -19,10 +20,12 @@ interface IListItem {
 const Suppliers = () => {
     const userContext = useContext(UserContext);
     const { data, refetch } = useQuery(GET_SUPPLIER, { variables: { storeId: userContext.user.storeId }});
+    const isFocused = useIsFocused();
     const router = useRouter();
+    
     useEffect(() => {
-        refetch();
-    }, []);
+        isFocused && refetch();
+    }, [isFocused]);
 
     const supplierData = useMemo(() => {
         return data?.suppliers?.map((supplier: any) => ({

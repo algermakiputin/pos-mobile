@@ -19,6 +19,7 @@ export default function HomeScreen() {
   const route = useRouter();
   const isFocused = useIsFocused();
   const { data: salesOverViewData, refetch } = useQuery(GET_SALES_OVERVIEW, { variables: { storeId: user.storeId }});
+  
   const chartData = useMemo(() => {
     return salesOverViewData?.getSalesOverview?.data.map((value: number, index:  number) => ({
       value: value,
@@ -28,6 +29,7 @@ export default function HomeScreen() {
   
   useEffect(() => {
     isFocused && refetch();
+    console.log(`refetching`, user);
   }, [isFocused]);
   return ( 
     <ScrollView>

@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_SUPPLIER, STORE_SUPPLIER } from "../src/supplier-queries";
 import { useContext } from "react";
 import UserContext from "../context/userContext";
+import { Button } from "@ui-kitten/components";
 
 const NewSupplier = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
@@ -94,11 +95,9 @@ const NewSupplier = () => {
                         </View> 
                     )}
                 />
-                <TouchableOpacity onPress={handleSubmit(submitHandler)}>
-                    <View style={styles.button}>
-                        <Text>Save Supplier</Text>
-                    </View>
-                </TouchableOpacity>
+                <Button onPress={handleSubmit(submitHandler)}>
+                    Save Supplier
+                </Button>
             </View>
         </View>
     );

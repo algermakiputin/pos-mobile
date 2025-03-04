@@ -100,6 +100,14 @@ export default function InventoryLayout() {
               headerTitleAlign:'center'
             }} 
             />
+          <Stack.Screen 
+            name="StockIn"
+            options={{ 
+              headerShown: true,
+              headerTitle: 'StockIn',
+              headerTitleAlign:'center'
+            }} 
+            />
         </Stack>
       </ThemeProvider>
     </InventoryContext.Provider>

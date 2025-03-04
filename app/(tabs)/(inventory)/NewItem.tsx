@@ -12,6 +12,7 @@ import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { STORE_ITEM } from "@/app/src/item-queries";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserContext from "@/app/context/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 type FormInput = {
     barcode: string;
@@ -39,14 +40,15 @@ const formInputDefaultValue = {
 
 const NewItem = () => {
     const userContext = useContext(UserContext);
+    const isFocused = useIsFocused();
     const { control, handleSubmit, formState: {errors} } = useForm();
     const [image, setImage] = useState('');
     const [formValues, setFormValues] = useState<FormInput>();
     const variables = {
         storeId: userContext.user.storeId
     }
-    const { data: categoriesData } = useQuery(GET_CATEGORIES, { variables });
-    const { data: supplierData } = useQuery(GET_SUPPLIER, { variables }); 
+    const { data: categoriesData, refetch: refetchCategories } = useQuery(GET_CATEGORIES, { variables });
+    const { data: supplierData, refetch: refetchSuppliers } = useQuery(GET_SUPPLIER, { variables }); 
     
     const supplierSelectData = useMemo(() => {
         return supplierData?.suppliers?.map((supplier: any) => ({
@@ -116,8 +118,9 @@ const NewItem = () => {
     }
 
     useEffect(() => {
-        console.log(`test`);
-    }, []);
+        refetchCategories();
+        refetchSuppliers();
+    }, [isFocused]);
 
     return (
         <ScrollView>

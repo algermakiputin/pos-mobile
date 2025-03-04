@@ -26,9 +26,9 @@ const CustomerSelectCard = () => {
                         </View>
                     </View>
                     <TouchableOpacity onPress={editButtonHandler}>
-                        <View style={style.editWrapper}>
+                        {/* <View style={style.editWrapper}>
                             <Text style={{fontFamily: 'Inter_400Regular'}}>Edit <Ionicons name="create-outline" /></Text>
-                        </View>
+                        </View> */}
                     </TouchableOpacity>
                 </View>
             </View>
