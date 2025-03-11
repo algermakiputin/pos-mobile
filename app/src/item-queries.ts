@@ -79,3 +79,13 @@ export const GET_SUMMARY = gql`
         }
     }
 `;
+
+export const ADD_STOCKS = gql`
+    mutation AddStocks($item: AddStocksInput) {
+        addStocks(item: $item) {
+            success
+            message
+            data
+        }
+    }
+`;

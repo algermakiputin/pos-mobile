@@ -1,5 +1,5 @@
 import { Card, Divider, List, ListItem, Text } from "@ui-kitten/components";
-import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import { StyleSheet, View } from "react-native";
 import { GET_SALES_DETAILS } from "@/app/src/sales-queries";
 import { useQuery } from "@apollo/client";

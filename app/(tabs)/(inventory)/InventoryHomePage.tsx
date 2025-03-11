@@ -85,6 +85,7 @@ const InventoryHomePage = () => {
     );
 
     const renderItem = ({item} : { item: Item}) => {
+        console.log(`item`, item);
         return (
             <View style={styles.card}>
                 {/* <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
@@ -118,7 +119,7 @@ const InventoryHomePage = () => {
                         <Ionicons name="ellipsis-vertical-outline" size={18} />
                     </MenuTrigger>
                     <MenuOptions>
-                        <MenuOption onSelect={() => router.navigate({ pathname: '/StockIn', params: { id: item.id }})} text='Stock In' />
+                        <MenuOption onSelect={() => router.navigate({ pathname: '/StockIn', params: { id: item.id, name: item.name, stocks: item.stocks }})} text='Stock In' />
                         <MenuOption onSelect={() => router.navigate({ pathname: '/ViewItem', params: { id: item.id }})} text='View' />
                         <MenuOption onSelect={() => router.navigate({pathname: routes.editItem as any, params: { id: item.id }})}  text="Edit"/>
                         <MenuOption onSelect={() => showAlert(item.id)} >
