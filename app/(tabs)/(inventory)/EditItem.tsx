@@ -6,7 +6,7 @@ import { GET_ITEM, GET_ITEMS, UPDATE_ITEM } from "@/app/src/item-queries";
 import { GET_SUPPLIER } from "@/app/src/supplier-queries";
 import { GET_CATEGORIES } from "@/app/src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useContext, useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
@@ -42,6 +42,7 @@ const formInputDefaultValue = {
 }
 
 const EditItem = () => {
+    const router = useRouter();
     const userContext = useContext(UserContext);
     const [image, setImage] = useState('');
     const [formValues, setFormValues] = useState<FormInput>(formInputDefaultValue);
@@ -98,6 +99,7 @@ const EditItem = () => {
         if (submit?.data?.updateItem?.success) {
             alert("Item updated successfully");
             refetch();
+            router.back();
         }
     }
 

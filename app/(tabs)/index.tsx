@@ -8,7 +8,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { GET_SALES_OVERVIEW } from "../src/sales-queries";
 import { useQuery } from "@apollo/client";
-import { formatAmount } from "../utils/utils";
+import { formatAmount, toTitleCase } from "../utils/utils";
 import { useRouter } from "expo-router";
 import UserContext from "../context/userContext";
 import { useIsFocused } from "@react-navigation/native";
@@ -29,13 +29,13 @@ export default function HomeScreen() {
   
   useEffect(() => {
     isFocused && refetch();
-    console.log(`refetching`, user);
   }, [isFocused]);
+
   return ( 
     <ScrollView>
       <View style={styles.container}>
         <View style={localStyles.topWrapper}>
-          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, <Text category="h6" style={{color: primaryColor}}>{ user.firstName }!</Text></Text>
+          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, <Text category="h6" style={{color: primaryColor}}>{ toTitleCase(user?.firstName) }!</Text></Text>
           <TouchableOpacity onPress={() => route.navigate('/Profile')}>
             <Ionicons style={{marginLeft: -25}} size={26} name="person-circle-outline" />
           </TouchableOpacity>

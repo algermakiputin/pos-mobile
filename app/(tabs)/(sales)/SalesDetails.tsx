@@ -36,7 +36,7 @@ const SalesDetails = () => {
     return <View style={{flex: 1, backgroundColor: '', height: '100%'}}>
         <View style={[localStyle.wrapper]}>
             <Card>
-                <Text>Transaction #: { String(params?.transaction_number) }</Text>
+                <Text>Transaction#: { String(params?.transaction_number) }</Text>
                 <Text>Date: { salesData?.getSalesDetails?.[0]?.created_at }</Text>
                 <Text>Total: { formatAmount(total) }</Text>
             </Card>

@@ -33,6 +33,7 @@ const InventoryHomePage = () => {
             }
         },
     }); 
+    console.log(`the data?`, JSON.stringify(data));
     const [destroyItem] = useMutation(DESTROY_ITEM);
     const isFocused = useIsFocused();
     const renderSearchIcon = () => {

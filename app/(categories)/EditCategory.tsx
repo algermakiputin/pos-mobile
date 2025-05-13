@@ -2,12 +2,13 @@ import { Button, Input, Text } from "@ui-kitten/components";
 import { StyleSheet, View } from "react-native";
 import { useForm, Controller } from 'react-hook-form';
 import styles from "../styles/style";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQuery } from "@apollo/client";
 import { FIND_CATEGORY, GET_CATEGORIES, UPDATE_CATEGORY } from "../src/categories-queries";
 import { useEffect } from "react";
 
 const EditCategory = () => {
+    const router = useRouter();
     const params = useLocalSearchParams();
     const { data, refetch: refetchFindCategory } = useQuery(FIND_CATEGORY, {
         variables: {
@@ -28,11 +29,11 @@ const EditCategory = () => {
             variables: {
                 category: data
             }
-        });
-        console.log(`updateCategory`, updateCategory);
+        }); 
         if (updateCategory?.data?.updateCategory?.success) {
             alert("Category updated successfully");
-            await refetch();
+            router.back();
+           
         } else {
             alert("Opps something went wrong, please try again later.");
         }

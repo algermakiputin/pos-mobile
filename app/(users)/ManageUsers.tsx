@@ -8,6 +8,7 @@ import { DESTROY_USER, GET_USERS } from '../src/users-queries';
 import { useContext, useEffect } from 'react';
 import UserContext from '../context/userContext';
 import { User } from '../types/userTypes';
+import { useIsFocused } from '@react-navigation/native';
 
 interface IListItem {
     name: string;
@@ -20,6 +21,7 @@ const ManageUsers = () => {
     const { user } = useContext(UserContext);
     const { data, refetch } = useQuery(GET_USERS, { variables: { adminId: user.id } });
     const [ deleteUser ] = useMutation(DESTROY_USER);
+    const isFocused = useIsFocused();
     const userData = data?.getUsers?.map((user: User ) => ({
         id: user?.id,
         name: `${user?.firstName} ${user?.lastName}`,
@@ -90,7 +92,7 @@ const ManageUsers = () => {
 
     useEffect(() => {
         refetch();
-    });
+    }, [isFocused]);
     
     return (
         <List

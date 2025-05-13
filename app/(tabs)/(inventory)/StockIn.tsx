@@ -1,15 +1,17 @@
 import { useForm, Controller } from "react-hook-form";
 import styles from "@/app/styles/style";
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, Alert } from "react-native";
 import { useMutation, useQuery } from "@apollo/client";
 import { useContext } from "react";
 import { Button } from "@ui-kitten/components";
 import UserContext from "@/app/context/userContext";
-import { useLocalSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
 import { ADD_STOCKS } from "@/app/src/item-queries";
+import { useRoute } from "@react-navigation/native";
 
 const StockIn = () => {
     const param = useLocalSearchParams();
+    const router = useRouter();
     const [addStocks, { error }] = useMutation(ADD_STOCKS);
     const { control, handleSubmit, formState: {errors}, reset } = useForm({
         defaultValues: {
@@ -18,7 +20,7 @@ const StockIn = () => {
         }
     });
     const userContext = useContext(UserContext);
-    console.log(`error`, error);
+   
     const submitHandler = async (data: any) => {
         const payload = {
             id: param.id,
@@ -29,7 +31,10 @@ const StockIn = () => {
                 item: payload
             }
         });
-        console.log(`update`, update);
+        if (update?.data?.addStocks?.success) {
+            Alert.alert("Stocks added successfully");
+            router.back();
+        }
     };
 
     return (
@@ -77,7 +82,7 @@ const StockIn = () => {
                     render={({field: {onChange, value, onBlur}}) => ( 
                         <View style={styles.formGroup}>
                             <TextInput 
-                                placeholder="Stocks" 
+                                placeholder="Enter stocks quantity to add" 
                                 style={styles.input}
                                 onBlur={onBlur}
                                 value={value}

@@ -5,13 +5,15 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_SUPPLIER, STORE_SUPPLIER } from "../src/supplier-queries";
 import { useContext } from "react";
 import UserContext from "../context/userContext";
-import { Button } from "@ui-kitten/components";
+import { Button } from "@ui-kitten/components"; 
+import { useRouter } from "expo-router";
 
 const NewSupplier = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
     const [storeSupplier] = useMutation(STORE_SUPPLIER);
     const userContext = useContext(UserContext);
     const { refetch } = useQuery(GET_SUPPLIER);
+    const router = useRouter();
     const submitHandler = async (data: any) => {
         const payload = {
             ...data,
@@ -28,6 +30,7 @@ const NewSupplier = () => {
             alert("Supplier saved successfully");
             reset();
             refetch();
+            router.back();
         }
     };
     return (

@@ -6,9 +6,11 @@ import { GET_CATEGORIES, STORE_CATEGORY } from "../src/categories-queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { useContext } from "react";
 import UserContext from "../context/userContext";
+import { useRouter } from "expo-router";
 
 const NewCategory = () => {
     const { control, handleSubmit, formState: {errors}, reset } = useForm();
+    const route = useRouter();
     const userContext = useContext(UserContext);
     const [storeCategory] = useMutation(STORE_CATEGORY);
 
@@ -24,6 +26,7 @@ const NewCategory = () => {
         if (store?.data?.storeCategory?.success) {
             alert("Category added successfully");
             reset(); 
+            route.back();
         }
     };
 

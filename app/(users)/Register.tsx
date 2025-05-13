@@ -1,6 +1,6 @@
 import { Button, Input, Text } from "@ui-kitten/components";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import styles from "../styles/style";
+import styles, { primaryColor } from "../styles/style";
 import { useRouter } from "expo-router";
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation } from "@apollo/client";
@@ -13,10 +13,9 @@ const Register = () => {
         route.navigate('/Login');
     }
     const { control, handleSubmit, formState: { errors }, reset } = useForm();
-    const [ register, { error } ] = useMutation(REGISTER);
+    const [ register, { error } ] = useMutation(REGISTER, { errorPolicy: 'none' });
     console.log(`error`, error);
     const formSubmitHandler = async (data: any) => {
-        console.log(`data`, data);
         const submit = await register({
             variables: {
                 user: data
@@ -32,7 +31,7 @@ const Register = () => {
 
     return (
         <View style={localStyles.container}>
-            <Text category="h2" style={styles.mb20}>Register</Text>
+            <Text category="h2" style={styles.mb20}>Register to Stockly</Text>
             <Text style={styles.mb20}>Enter your information</Text>
             <Controller 
                 name="firstName"
@@ -127,7 +126,7 @@ const Register = () => {
                     <Image source={googleLogo} style={localStyles.socialLoginIcon} />
                 </View>
             </View> */}
-            <Text style={{textAlign: 'center'}}>Already have an account? <Text onPress={redirectToRegister}>Login</Text></Text>
+            <Text style={{textAlign: 'center'}}>Already have an account? <Text onPress={redirectToRegister} style={{color: primaryColor, cursor: 'pointer'}}>Login</Text></Text>
         </View>
     );
 }

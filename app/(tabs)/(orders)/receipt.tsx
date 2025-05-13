@@ -37,7 +37,7 @@ const Receipt = () => {
                 <Divider style={[style.divider, styles.mt30]} />
                 <View style={[styles.flexColumns, styles.mb5]}>
                     <Text>Total Amount</Text>
-                    <Text style={styles.bold}>{orderTotal}</Text>
+                    <Text style={styles.bold}>{Number(orderTotal).toFixed(2)}</Text>
                 </View>
             </View>
             <Button onPress={newOrderButtonHandler} style={style.button} status="primary">New Order</Button>

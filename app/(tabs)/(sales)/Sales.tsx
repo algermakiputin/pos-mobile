@@ -14,7 +14,7 @@ import BasicLoader from "@/components/Loader/BasicLoader";
 const Sales = () => {
     const userContext = useContext(UserContext);
     const { width } = Dimensions.get('window');
-    const [dateRange, setDateRange] = useState("today");
+    const [dateRange, setDateRange] = useState("Today");
     const { data: salesData, refetch, loading } = useQuery(GET_SALES_ANALYTICS, { variables: {
         filter: {
             storeId: userContext.user.storeId,
@@ -43,7 +43,7 @@ const Sales = () => {
         />
     );
 
-    const dropdownData = [{title: 'Today'}, {title: 'Yesterday'}, {title: 'This Month'}, {title: 'Last Month'}];
+    const dropdownData = [{title: 'Today'}, {title: 'Yesterday'}, {title: 'Last 7 Days'}, {title: 'Last 30 Days'}];
     
     const showDetailsHandler = ( transaction_number: string) => {
         route.navigate({pathname: "/SalesDetails", params: { transaction_number }});

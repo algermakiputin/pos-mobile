@@ -13,6 +13,7 @@ import { STORE_ITEM } from "@/app/src/item-queries";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserContext from "@/app/context/userContext";
 import { useIsFocused } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 type FormInput = {
     barcode: string;
@@ -48,7 +49,8 @@ const NewItem = () => {
         storeId: userContext.user.storeId
     }
     const { data: categoriesData, refetch: refetchCategories } = useQuery(GET_CATEGORIES, { variables });
-    const { data: supplierData, refetch: refetchSuppliers } = useQuery(GET_SUPPLIER, { variables }); 
+    const { data: supplierData, refetch: refetchSuppliers } = useQuery(GET_SUPPLIER, { variables });
+    const router = useRouter(); 
     
     const supplierSelectData = useMemo(() => {
         return supplierData?.suppliers?.map((supplier: any) => ({
@@ -102,11 +104,11 @@ const NewItem = () => {
                     image: image
                 }
             }
-        });
-        console.log(`store`, store);
+        }); 
         if (store?.data?.storeItem?.success) {
             alert("Added Successfully");
             setFormValues(formInputDefaultValue);
+            router.back();
         }
     }
 

@@ -51,6 +51,7 @@ const Orders = () => {
             refetch();
         }
     }, [isFocused]);
+    
     const renderItem = useCallback(({ item, index }: { item: Item, index: number }) => {
         const isSelected = (selectedIndex == index || renderQuantity(item.id));
         return (

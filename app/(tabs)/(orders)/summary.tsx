@@ -11,6 +11,7 @@ import { formatAmount } from "@/app/utils/utils";
 import { STORE_SALES } from "@/app/src/sales-queries";
 import { useMutation } from "@apollo/client";
 import UserContext from "@/app/context/userContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const Summary = () => {
   const userContext = useContext(UserContext);
@@ -18,7 +19,8 @@ const Summary = () => {
   const {order, orderTotal} = useContext(OrderContext);
   
   const renderItemIcon = (props: any) => (
-    <View style={{height:55,width:55,backgroundColor:'#777', borderRadius:5}}>
+    <View style={[style.layout, style.avatar]}>
+      <Ionicons name="image-outline" size={30} style={{color: '#ccc'}}/>
     </View>
   );
 
@@ -114,7 +116,17 @@ const style = StyleSheet.create({
   divider: {
     marginBottom:10, 
     marginTop:0
-  }
+  },
+  avatar: {
+    width: 50,
+    backgroundColor: '#ddd',
+    height: 50,
+    borderRadius: 15
+  },
+  layout: {
+      justifyContent: 'center',
+      alignItems: 'center',
+  },
 });
 
 export default Summary;

@@ -21,6 +21,7 @@ export const LOGIN = gql`
             firstName
             lastName
             storeId
+            accountType
         }
     }
 `;
@@ -45,6 +46,7 @@ export const FIND_USER = gql`
             token
             firstName
             lastName
+            account_type
         }
     }
 `;

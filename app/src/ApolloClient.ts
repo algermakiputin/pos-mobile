@@ -8,8 +8,7 @@ const getToken = async () => {
 }
 
 const httpLink = createHttpLink({
-    // uri: 'http://172.20.10.2:3333/',
-    uri: 'http://192.0.0.2:3333'
+    uri: 'http://192.168.254.104:3333'
 });
 
 
@@ -22,9 +21,11 @@ const authLink = setContext(async (root: any, { headers }) => {
     }
 });
 
+
+
 const client = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
 });
 
 export default client;
