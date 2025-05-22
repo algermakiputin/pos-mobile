@@ -9,7 +9,8 @@ type Props = {
     onPressHandler?: () => void;
     title?: string;
     itemCount?: number,
-    total?: number
+    total?: number,
+    loading?: boolean
 }
 
 const Button = (Props: Props) => {
@@ -19,19 +20,25 @@ const Button = (Props: Props) => {
     return (
         <TouchableOpacity 
             onPress={processOrderHandler}
-            style={style.container}>
-            <View style={[styles.flexColumns, style.buttonWrapper]}>
-                <View>
-                    <Text style={[styles.textColorWhite, {fontFamily: 'Inter_400Regular', fontSize: 14}]}>{Props.title}</Text>
-                </View>
-                <View>
-                    <View style={styles.flexColumns}>
-                        <Text style={style.textItemQuantity}>{Props?.itemCount || 0} items</Text>
-                        <Text style={style.textAmount}>{formatAmount(Number(Props?.total))}</Text>
-                        <Ionicons name="arrow-forward-outline"  size={18} color={'#fff'}/>
+            style={style.container}
+            disabled={Props?.loading}
+            >
+            {
+                <View style={[styles.flexColumns, style.buttonWrapper]}>
+                    <View>
+                        <Text style={[styles.textColorWhite, {fontFamily: 'Inter_400Regular', fontSize: 14}]}>{Props.title}</Text>
+                    </View>
+                    <View>
+                        <View style={styles.flexColumns}>
+                            <Text style={style.textItemQuantity}>{Props?.itemCount || 0} items</Text>
+                            <Text style={style.textAmount}>{formatAmount(Number(Props?.total))}</Text>
+                            {
+                                Props?.loading ? <Ionicons name="sync" size={20} color="#fff" /> : <Ionicons name="arrow-forward-outline"  size={18} color={'#fff'}/>
+                            }
+                        </View>
                     </View>
                 </View>
-            </View>
+            }
         </TouchableOpacity>
     )
 }

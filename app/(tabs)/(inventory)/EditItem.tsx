@@ -1,4 +1,4 @@
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, ScrollView, TouchableOpacity, StyleSheet, Image } from "react-native";
 import styles, { blackLightShade } from '../../styles/style';
 import { useForm, Controller } from "react-hook-form";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -10,7 +10,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useContext, useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
-import { Layout, Button, Input } from "@ui-kitten/components";
+import { Layout, Button, Input, useTheme, Text, IndexPath } from "@ui-kitten/components";
 import BasicLoader from "@/components/Loader/BasicLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserContext from "@/app/context/userContext";
@@ -42,9 +42,11 @@ const formInputDefaultValue = {
 }
 
 const EditItem = () => {
+    const theme = useTheme();
     const router = useRouter();
     const userContext = useContext(UserContext);
     const [image, setImage] = useState('');
+    const [dataLoaded, setDataLoaded] = useState(false);
     const [formValues, setFormValues] = useState<FormInput>(formInputDefaultValue);
     const params = useLocalSearchParams();
     const { data: itemData, loading: itemLoading, refetch: refetchItem } = useQuery(GET_ITEM, {
@@ -54,7 +56,7 @@ const EditItem = () => {
     });
     
     const { refetch } = useQuery(GET_ITEMS);
-    const [ updateItem, { error: updateError } ] = useMutation(UPDATE_ITEM, {
+    const [ updateItem, { error: updateError, loading } ] = useMutation(UPDATE_ITEM, {
         variables: {
             editItemInput: {
                 barcode: formValues?.barcode,
@@ -77,25 +79,42 @@ const EditItem = () => {
     }
     const { data: categoriesData, loading: categoryLoading } = useQuery(GET_CATEGORIES, { variables });
     const { data: supplierData, loading: supplierLoading } = useQuery(GET_SUPPLIER, { variables });
-    const categoriesSelectData = useMemo(() => {
+    
+    const categoriesSelectData = () => {
         return categoriesData?.categories?.map((value: any) => ({
             value: value?.name,
             key: value?.id
         }))
-    }, [categoriesData]);
-    
-    const suppliersSelectData = useMemo(() => {
-        return supplierData?.suppliers?.map((value: any) => ({
-            value: value?.name,
-            key: value?.id
-        }))
-    }, [supplierData]);
+    };
 
-    const submitHandler = async () => {
+    const suppliersSelectData = () => {
+        const suppliers = supplierData?.suppliers?.map((value: any) => ({
+            key: value?.id,
+            value: value?.name
+        }));
+        return suppliers;
+    }
+    const submitHandler = async (data: any) => {
+      
         if (formValues.image) {
             await AsyncStorage.setItem(`item.${formValues.barcode}`, image);
         }
-        const submit = await updateItem();
+        const submit = await updateItem({
+            variables: {
+                editItemInput: {
+                    barcode: formValues?.barcode,
+                    name: formValues?.name,
+                    description: formValues?.description,
+                    category_id: formValues?.category_id,
+                    supplier_id: formValues?.supplier_id,
+                    capital: formValues?.capital,
+                    price: formValues?.price,
+                    stocks: Number(formValues?.stocks),
+                    image: formValues?.image,
+                    id: formValues?.id
+                }
+            }
+        });
         if (submit?.data?.updateItem?.success) {
             alert("Item updated successfully");
             refetch();
@@ -121,40 +140,29 @@ const EditItem = () => {
     };
 
     const inputChangeHandler = (key: string, value: string | number) => {
+        console.log(`key`, key);
         setFormValues((prevState: any) => ({
             ...prevState,
             [key]: value
         }))
-    }
+    } 
 
-    const Loading = () => {
-        return null;
-    }
+    console.log(`formValues`, formValues);
 
     useEffect(() => {
-        refetchItem();
-    }, []);
-
-    useEffect(() => {
-        inputChangeHandler('id', itemData?.item?.id);
-        setFormValues(itemData?.item);
-        reset(itemData?.item);
-    }, [itemData]);
-
-    const mapSupplier = (field: string, value: string) => {
-        return suppliersSelectData?.find((supplier: any) => supplier[field] = value);
-    }
-
-    const mapCategory = (field: string, value: string) => {
-        return categoriesSelectData?.find((category: any) => category[field] = value);
-    }
+        if (!dataLoaded) {
+            inputChangeHandler('id', itemData?.item?.id);
+            setFormValues(itemData?.item); 
+            reset(itemData?.item);
+            setDataLoaded(true)
+        }
+    }, [itemData]); 
     
     if (itemLoading || categoryLoading || supplierLoading) return <BasicLoader />;
-    
+   
     return (
         <ScrollView>
-            <View style={[styles.container, { padding: 0 }]}>
-                <TouchableOpacity onPress={handleChoosePhoto}>
+            <TouchableOpacity onPress={handleChoosePhoto}>
                     <View style={localStyle.itemImageContainer}>
                         { 
                             (!image && !itemData?.item?.image) ? (
@@ -168,15 +176,17 @@ const EditItem = () => {
                         }
                     </View>
                 </TouchableOpacity>
-                <View style={styles.card}>
+            <View style={[styles.container, { marginBottom:80, backgroundColor: theme['background-basic-color-1'] }]}>
+                
+                <View>
                 <Controller 
                         name="name"
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => ( 
                             <View style={styles.formGroup}>
                                 <Input 
+                                    label={'Barcode'}
                                     value={formValues?.barcode}
-                                    label={"Barcode"}
                                     placeholder="Barcode"
                                     onBlur={onBlur}
                                     defaultValue={itemData?.item?.barcode}
@@ -184,7 +194,8 @@ const EditItem = () => {
                                         inputChangeHandler('barcode', value);
                                         onChange(value)
                                     }}
-                                    style={localStyle.input}
+                                    style={{borderRadius: 20}}
+                                    size="large"
                                 />
                                 { ((errors as any)?.barcode?.message && !formValues?.barcode) && <Text style={styles.textDanger}>{(errors as any)?.barcode?.message}</Text>}
                             </View> 
@@ -196,8 +207,8 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => ( 
                             <View style={styles.formGroup}>
-                                <Input 
-                                    label={"Name"}
+                                <Input
+                                    label={'Item Name'}
                                     placeholder="Item Name"
                                     onBlur={onBlur}
                                     value={ formValues?.name }
@@ -206,7 +217,8 @@ const EditItem = () => {
                                         inputChangeHandler('name', value);
                                         onChange(value)
                                     }}
-                                    style={localStyle.input}
+                                    style={{borderRadius: 20}}
+                                    size="large"
                                 />
                                 { ((errors as any)?.name?.message && !formValues?.name) && <Text style={styles.textDanger}>{(errors as any)?.name?.message}</Text>}
                             </View> 
@@ -218,8 +230,8 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}} ) => (
                             <View style={styles.formGroup}>
-                                <Input 
-                                    label={"Description"}
+                                <Input
+                                    label={'Description'}
                                     placeholder="Description"
                                     onBlur={onBlur}
                                     value={ formValues?.description}
@@ -228,7 +240,8 @@ const EditItem = () => {
                                         onChange(value);
                                         inputChangeHandler('description', value)
                                     }}
-                                    style={localStyle.input}
+                                    style={{borderRadius: 20}}
+                                    size="large"
                                 />
                                 { ((errors as any)?.description?.message && !formValues?.description) && <Text style={styles.textDanger}>{(errors as any)?.description?.message}</Text>}
                             </View>
@@ -240,17 +253,19 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
-                                <Text style={localStyle.inputLabel}>Category</Text>
+                                <Text category="c1" style={{marginBottom: 7, color: 'rgb(143, 155, 179)', fontSize: 12, fontWeight: 700}}>Category</Text>
                                 <SelectList 
                                     setSelected={(val: string) => {
-                                        inputChangeHandler('category', mapCategory('value', val)?.key);
+                                        const id = categoriesData?.categories?.find((category: any) => category.name === val)?.id;
+                                        console.log(`id`, id);
+                                        inputChangeHandler('category_id', id);
                                         onChange(value);
                                     }}
-                                    data={categoriesSelectData}
+                                    data={categoriesSelectData()}
                                     save="value"
-                                    boxStyles={styles.input}
+                                    boxStyles={{borderRadius: 20, borderColor: 'rgb(228, 233, 242)', backgroundColor: 'rgb(247, 249, 252)'}}
                                     placeholder="Select Category"
-                                    defaultOption={{key: Number(itemData?.item?.category_id), value: mapCategory('key', itemData?.item?.category_id)?.value }}
+                                    defaultOption={{key: Number(itemData?.item?.category_id), value: itemData?.item?.categoryName }}
                                 />
                                 { ((errors as any)?.category_id?.message && !formValues?.category_id) && <Text style={styles.textDanger}>{(errors as any)?.category?.message}</Text>}
                             </View>
@@ -262,31 +277,34 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
-                                <Text style={localStyle.inputLabel}>Supplier</Text>
+                                <Text category="c1" style={{marginBottom: 7, color: 'rgb(143, 155, 179)', fontSize: 12, fontWeight: 700}}>Supplier</Text>
                                 <SelectList 
                                     setSelected={(val: string, key: string) => {
+                                        const id = supplierData?.suppliers?.find((supplier: any) => supplier.name === val)?.id;
                                         onChange(val);
-                                        inputChangeHandler('supplier', mapSupplier('value', val)?.key);
+                                        inputChangeHandler('supplier_id', id);
                                     }}
-                                    data={suppliersSelectData}
+                                    data={suppliersSelectData()}
                                     save="value"
-                                    boxStyles={styles.input}
+                                
+                                    boxStyles={{borderRadius: 20, borderColor: 'rgb(228, 233, 242)', backgroundColor: 'rgb(247, 249, 252)'}}
                                     placeholder="Select Supplier"
-                                    defaultOption={{key: Number(itemData?.item?.supplier_id), value: mapSupplier('key', itemData?.item?.supplier_id)?.value }}
+                                    defaultOption={{key: Number(itemData?.item?.supplier_id), value: itemData?.item?.supplierName }}
                                 />
                                 { ((errors as any)?.supplier_id?.message && !formValues?.supplier_id) && <Text style={styles.textDanger}>{(errors as any)?.supplier_id?.message}</Text>}
                             </View>
                         )}
                         rules={{required: 'Supplier is required'}}
                     />
-                    <Layout style={{flex:1, flexDirection: 'row', gap: 10}}>
+                    <Layout style={{flex:1, flexDirection: 'row', gap: 10, backgroundColor: 'transparent'}}>
                         <Controller 
                             name="capital"
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
                                 <View style={[styles.formGroup, {flex: 1}]}>
-                                    <Input 
-                                        label={"Capital"}
+                                    <Text category="c1" style={{marginBottom: 7}}>Capital</Text>
+                                    <Input
+                                        label={'Capital'}
                                         placeholder="Capital"
                                         onBlur={onBlur}
                                         value={ formValues?.capital }
@@ -295,7 +313,8 @@ const EditItem = () => {
                                             inputChangeHandler('capital', value)
                                             onChange(value)
                                         }}
-                                        style={localStyle.input}
+                                        style={{borderRadius: 20}}
+                                        size="large"
                                     />
                                     { ( (errors as any)?.capital?.message && !formValues?.capital ) && <Text style={styles.textDanger}>{(errors as any)?.capital?.message}</Text>}
                                 </View>
@@ -307,11 +326,13 @@ const EditItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
                                 <View style={[styles.formGroup, { flex: 1}]}>
-                                    <Input 
-                                        label={"Retail Price"}
+                                    <Text category="c1" style={{marginBottom: 7}}>Retail price</Text>
+                                    <Input
+                                        label={'Retail Price'}
                                         placeholder="Retail Price"
                                         onBlur={onBlur}
-                                        style={localStyle.input}
+                                        style={{borderRadius: 20}}
+                                        size="large"
                                         value={ formValues?.price }
                                         defaultValue={ String(itemData?.item?.price) }
                                         onChangeText={value => {
@@ -330,11 +351,13 @@ const EditItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
-                                <Input 
-                                    label={"Stocks"}
+                                <Text category="c1" style={{marginBottom: 7}}>Stocks</Text>
+                                <Input
+                                    label={'Stocks'}
                                     placeholder="Stocks" 
                                     onBlur={onBlur}
-                                    style={localStyle.input}
+                                    style={{borderRadius: 20}}
+                                    size="large"
                                     value={ formValues?.stocks }
                                     defaultValue={String(itemData?.item?.stocks || '')}
                                     onChangeText={value => {
@@ -347,7 +370,7 @@ const EditItem = () => {
                         )}
                         rules={{required: 'Capital is required'}}
                     />
-                    <Button onPress={handleSubmit(submitHandler)}>Update Product</Button>
+                    <Button size="large" style={{borderRadius:20}} onPress={handleSubmit(submitHandler)} disabled={loading}>{ loading ? 'Loading...' : 'Update Product' }</Button>
                 </View>
             </View>
         </ScrollView>

@@ -1,6 +1,6 @@
 export const formatAmount = (amount: number) => {
     if (isNaN(amount)) return '';
-    return new Intl.NumberFormat("en-US", {style: "currency", currency: "PHP"}).format(amount);
+    return new Intl.NumberFormat("en-US", {style: "currency", currency: "PHP", minimumFractionDigits:2, maximumFractionDigits: 2}).format(amount);
 }
 
 export const toTitleCase = (str: string) => {

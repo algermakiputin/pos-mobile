@@ -1,8 +1,8 @@
-import { View, TextInput, ScrollView, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, TextInput, ScrollView, StyleSheet, TouchableOpacity, Image } from "react-native";
 import styles, { blackLightShade, primaryColor } from '../../styles/style';
 import { useForm, Controller } from "react-hook-form";
 import { SelectList } from "react-native-dropdown-select-list";
-import { Layout, Button } from "@ui-kitten/components";
+import { Layout, Button, Input, Text } from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { useContext, useEffect, useMemo, useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
@@ -126,7 +126,7 @@ const NewItem = () => {
 
     return (
         <ScrollView>
-            <View style={{}}>
+            <View style={{paddingBottom: 80}}>
                 <TouchableOpacity onPress={handleChoosePhoto}>
                     <View style={localStyle.itemImageContainer}>
                         { 
@@ -148,9 +148,10 @@ const NewItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => ( 
                                 <View style={styles.formGroup}>
-                                    <TextInput 
+                                    <Input
+                                        label={"Barcode"}
+                                        size="large" 
                                         placeholder="Barcode" 
-                                        style={styles.input}
                                         onBlur={onBlur}
                                         value={value}
                                         onChangeText={value => {
@@ -170,9 +171,10 @@ const NewItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => ( 
                                 <View style={styles.formGroup}>
-                                    <TextInput 
-                                        placeholder="Item Name" 
-                                        style={styles.input}
+                                    <Input
+                                        label={"Item Name"}
+                                        size="large" 
+                                        placeholder="Item Name"  
                                         onBlur={onBlur}
                                         value={formValues?.name}
                                         onChangeText={value => {
@@ -192,15 +194,16 @@ const NewItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}} ) => (
                                 <View style={styles.formGroup}>
-                                    <TextInput 
+                                    <Input 
+                                        label={"Description"}
                                         placeholder="Description" 
-                                        style={styles.input}
                                         onBlur={onBlur}
                                         value={formValues?.description}
                                         onChangeText={value => { 
                                             inputChangeHandler('description', value);
                                             onChange(value);
                                         }}
+                                        size="large"
                                     />
                                     { (errors as any)?.description?.message && <Text style={styles.textDanger}>{(errors as any)?.description?.message}</Text>}
                                 </View>
@@ -213,15 +216,16 @@ const NewItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
+                                <Text category="c1" style={{marginBottom: 7, color: 'rgb(143, 155, 179)', fontSize: 12, fontWeight: 700}}>Category</Text>
                                 <SelectList 
                                     setSelected={(val: string) => {
                                         var id = categoriesSelectData?.find((category:Select) => category.value == val)?.key;
-                                        inputChangeHandler('category_id', id)
+                                        inputChangeHandler('category_id', id);
                                         onChange(id);
                                     }}
                                     data={categoriesSelectData}
                                     save="value"
-                                    boxStyles={styles.input}
+                                    boxStyles={{...styles.input, borderColor: 'rgb(228, 233, 242)', backgroundColor: 'rgb(247, 249, 252)'}}
                                     placeholder="Select Category"
                                 />
                                 { (errors as any)?.category?.message && <Text style={styles.textDanger}>{(errors as any)?.category?.message}</Text>}
@@ -234,6 +238,7 @@ const NewItem = () => {
                         control={control}
                         render={({field: {onChange, value, onBlur}}) => (
                             <View style={styles.formGroup}>
+                                <Text category="c1" style={{marginBottom: 7, color: 'rgb(143, 155, 179)', fontSize: 12, fontWeight: 700}}>Supplier</Text>
                                 <SelectList 
                                     setSelected={(val: string) => {
                                         var id = supplierSelectData?.find((supplier:Select) => supplier.value == val)?.key;
@@ -242,7 +247,7 @@ const NewItem = () => {
                                     }}
                                     data={supplierSelectData}
                                     save="value"
-                                    boxStyles={styles.input}
+                                    boxStyles={{...styles.input, borderColor: 'rgb(228, 233, 242)', backgroundColor: 'rgb(247, 249, 252)'}}
                                     placeholder="Select Supplier"
                                 />
                                 { (errors as any)?.supplier?.message && <Text style={styles.textDanger}>{(errors as any)?.supplier?.message}</Text>}
@@ -256,9 +261,10 @@ const NewItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
                                 <View style={[styles.formGroup, { flex: 1}]}>
-                                    <TextInput 
-                                        placeholder="Capital" 
-                                        style={[styles.input]}
+                                    <Input
+                                        label={"Capital"}
+                                        size="large"     
+                                        placeholder="Capital"  
                                         onBlur={onBlur}
                                         value={formValues?.capital}
                                         onChangeText={value => {
@@ -276,9 +282,10 @@ const NewItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}}) => (
                                 <View style={[styles.formGroup, { flex: 1}]}>
-                                    <TextInput 
-                                        placeholder="Retail Price" 
-                                        style={[styles.input]}
+                                    <Input 
+                                        label={'Retail Price'}
+                                        size="large" 
+                                        placeholder="Retail Price"  
                                         onBlur={onBlur}
                                         value={formValues?.price}
                                         onChangeText={value => {
@@ -298,9 +305,10 @@ const NewItem = () => {
                             control={control}
                             render={({field: {onChange, value, onBlur}} ) => (
                                 <View style={styles.formGroup}>
-                                    <TextInput 
+                                    <Input
+                                        size="large"
                                         placeholder="Stocks" 
-                                        style={styles.input}
+                                        label={"Stocks"}
                                         onBlur={onBlur}
                                         value={formValues?.stocks}
                                         onChangeText={value => { 
@@ -314,7 +322,7 @@ const NewItem = () => {
                             rules={{required: 'Stocks is required'}}
                         />
                     </Layout>
-                    <Button disabled={loading} style={localStyle.button} onPress={handleSubmit(submitHandler)}>{ loading ? 'Loading...' : 'Save Product'}</Button>
+                    <Button size="large" disabled={loading} style={localStyle.button} onPress={handleSubmit(submitHandler)}>{ loading ? 'Loading...' : 'Save Product'}</Button>
                 </View>
             </View>
         </ScrollView>

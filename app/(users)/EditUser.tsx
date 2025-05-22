@@ -16,6 +16,7 @@ const EditUser = () => {
     const [ updateUser, { error, loading } ] = useMutation(UPDATE_USER);
     const { data: userData, refetch } = useQuery(FIND_USER, { variables: { userId: params.id } });
     const formSubmitHandler = async (data: any) => {
+        return console.log(`data`, data);
         const update = await updateUser({
             variables: {
                 user: {

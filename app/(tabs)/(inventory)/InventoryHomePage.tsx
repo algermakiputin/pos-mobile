@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import styles from "@/app/styles/style";
-import { Input, List, Spinner, Text} from "@ui-kitten/components";
+import { Input, List, Spinner, Text, useTheme} from "@ui-kitten/components";
 import { Ionicons } from "@expo/vector-icons";
 import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
 import { routes } from "@/app/types/routes";
@@ -17,6 +17,7 @@ import { useIsFocused } from "@react-navigation/native";
 import GenericErrorMessage from "@/components/error/GenericErrorMessage";
 
 const InventoryHomePage = () => {
+    const theme = useTheme();
     const router = useRouter(); 
     const userContext = useContext(UserContext);
     const { ContextMenu } = renderers;
@@ -33,7 +34,7 @@ const InventoryHomePage = () => {
             }
         },
     }); 
-    console.log(`the data?`, JSON.stringify(data));
+
     const [destroyItem] = useMutation(DESTROY_ITEM);
     const isFocused = useIsFocused();
     const renderSearchIcon = () => {
@@ -86,11 +87,8 @@ const InventoryHomePage = () => {
     );
 
     const renderItem = ({item} : { item: Item}) => {
-        console.log(`item`, item);
         return (
             <View style={styles.card}>
-                {/* <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
-                <Text style={style.itemTitle}>{ item.name }</Text> */}
                 <View style={[styles.row, { gap: 10, flexWrap: 'nowrap'}]}>
                     <View style={{}}>
                         {
@@ -107,12 +105,9 @@ const InventoryHomePage = () => {
                         }
                     </View>
                     <View style={[style.productDetailsColumn]}>
-                        <Text style={{color: '#777', fontFamily: 'Inter_400Regular'}}>{ item.barcode }</Text>
-                        <Text style={style.itemTitle}>{ item.name }</Text>
-                        {/* <Text category="s2" style={styles.normalText}>Supplier: <Text style={style.textValue}>{item.supplierName}</Text></Text>
-                        <Text category="s2" style={styles.normalText}>Category: <Text style={style.textValue}>{item.categoryName}</Text></Text> */}
-                        <Text category="s2" style={styles.normalText}>Stocks: <Text style={style.textValue}>{item.stocks}</Text></Text>
-                        <Text category="s1" style={style.price}>{ formatAmount(Number(item.price)) }</Text>
+                        <Text category="s1">{ item.name } <Text category="label" style={{color: theme['color-basic-600']}}>({item.categoryName})</Text></Text>
+                        <Text category="s2"><Text>{item.stocks} in stocks</Text></Text>
+                        <Text category="s2">{ formatAmount(Number(item.price)) }</Text>
                     </View> 
                 </View> 
                 <Menu renderer={ContextMenu} style={{width:20, position:'absolute', right: 10, bottom:20}}>

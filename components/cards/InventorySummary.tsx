@@ -1,5 +1,5 @@
 import { primaryColor } from "@/app/styles/style";
-import { Layout, Text } from "@ui-kitten/components";
+import { Layout, Text, useTheme } from "@ui-kitten/components";
 import { StyleSheet, ScrollView } from "react-native";
 import { GET_SUMMARY } from "@/app/src/item-queries";
 import { useQuery } from "@apollo/client";
@@ -9,6 +9,7 @@ import UserContext from "@/app/context/userContext";
 import { useIsFocused } from "@react-navigation/native";
 
 const InventorySummary = () => {
+    const theme = useTheme();
     const isFocused = useIsFocused();
     const userContext = useContext(UserContext);
     const { data: summary, refetch } = useQuery(GET_SUMMARY, { variables: { storeId: userContext.user.storeId } });
@@ -17,7 +18,7 @@ const InventorySummary = () => {
         isFocused && refetch();
     }, [isFocused]);
     return (
-        <Layout style={localStyles.cardContainer}>
+        <Layout style={[localStyles.cardContainer, {borderLeftColor: theme['color-primary-700']}]}>
             <Text style={localStyles.cardHeaderText}>Inventory Summary</Text>
             <Layout style={localStyles.rowLayout}> 
                 <Layout style={localStyles.layout}>
@@ -59,7 +60,6 @@ const localStyles = StyleSheet.create({
     cardContainer: {
         borderRadius: 10,
         padding: 20,
-        borderLeftColor: primaryColor,
         borderLeftWidth: 5,
         overflow: 'scroll',
         zIndex: 100,

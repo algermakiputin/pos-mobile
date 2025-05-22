@@ -36,7 +36,7 @@ const Sales = () => {
     const renderItem = ({ item, index }: { item: any; index: number }): React.ReactElement => (
         <ListItem
             title={ () => <Text style={{color:'#777'}}>{ item?.transaction_number }</Text>}
-            description={() => <View><Text category="s2">{item?.totalItems} Items | </Text><Text category="s2">Customer:  { item?.customer_name ? item.customer_name : 'Walk-In' }</Text></View>}
+            description={() => <View><Text category="s2">{item?.totalItems} Items </Text><Text category="s2">Customer:  { item?.customer_name ? item.customer_name : 'Walk-In' }</Text></View>}
             accessoryLeft={renderItemIcon(index + 1)}
             accessoryRight={() => renderItemAccessory(item?.total)}
             onPress={() => showDetailsHandler(item?.transaction_number)}

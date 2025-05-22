@@ -1,4 +1,4 @@
-import { Text } from "@ui-kitten/components";
+import { Text, useTheme } from "@ui-kitten/components";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import InventorySummary from "@/components/cards/InventorySummary";
 import QuickMenu from "@/components/navigation/QuickMenu";
@@ -15,6 +15,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 export default function HomeScreen() {
   const { user } = useContext(UserContext);
+  const theme = useTheme();
   const [containerWidth, setContainerWidth] = useState(0);
   const route = useRouter();
   const isFocused = useIsFocused();
@@ -35,9 +36,9 @@ export default function HomeScreen() {
     <ScrollView>
       <View style={styles.container}>
         <View style={localStyles.topWrapper}>
-          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, <Text category="h6" style={{color: primaryColor}}>{ toTitleCase(user?.firstName) }!</Text></Text>
+          <Text style={[localStyles.welcomeMessage]} category="h6">Welcome, <Text category="h6" style={{color: theme['color-primary-700']}}>{ toTitleCase(user?.firstName) }!</Text></Text>
           <TouchableOpacity onPress={() => route.navigate('/Profile')}>
-            <Ionicons style={{marginLeft: -25}} size={26} name="person-circle-outline" />
+              <Ionicons style={{marginLeft: 0}} size={25} name="person-circle-outline" color={theme['color-primary-700']}/>
           </TouchableOpacity>
         </View>
         <InventorySummary />
@@ -101,9 +102,7 @@ export default function HomeScreen() {
 } 
 
 const localStyles = StyleSheet.create({
-  welcomeMessage: {
-    marginTop: 10,
-    marginBottom: 20,
+  welcomeMessage: { 
     fontFamily: 'Inter_800ExtraBold',
     fontSize: 20
   },
@@ -111,6 +110,7 @@ const localStyles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'row', 
     alignItems: 'center', 
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginBottom: 10
   }
 });

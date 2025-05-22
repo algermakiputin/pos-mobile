@@ -1,4 +1,4 @@
-import { Button, Input, Text } from "@ui-kitten/components";
+import { Button, Input, Text, useTheme } from "@ui-kitten/components";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import styles, { primaryColor } from "../styles/style";
 import { useRouter } from "expo-router";
@@ -7,30 +7,33 @@ import { useMutation } from "@apollo/client";
 import { REGISTER } from "../src/users-queries";
 
 const Register = () => {
+    const theme = useTheme()
     const googleLogo = require('@/assets/images/logo/google.png');
     const route = useRouter();
     const redirectToRegister = () => {
         route.navigate('/Login');
     }
     const { control, handleSubmit, formState: { errors }, reset } = useForm();
-    const [ register, { error } ] = useMutation(REGISTER, { errorPolicy: 'none' });
-    console.log(`error`, error);
+    const [ register, { error, loading } ] = useMutation(REGISTER, { errorPolicy: 'none' });
     const formSubmitHandler = async (data: any) => {
-        const submit = await register({
-            variables: {
-                user: data
+        try {
+            const submit = await register({
+                variables: {
+                    user: data
+                }
+            }); 
+            if (submit?.data?.register?.token) {
+                alert("Registered successfully");
+                reset();
+                redirectToRegister();
             }
-        });
-        console.log(`submit`, submit);
-        if (submit?.data?.register?.token) {
-            alert("Registered successfully");
-            reset();
-            redirectToRegister();
+        } catch (err) {
+            alert("Registration failed: " + error?.message); 
         }
     }
 
     return (
-        <View style={localStyles.container}>
+        <View style={[localStyles.container, { backgroundColor: theme['background-basic-color-2']}]}>
             <Text category="h2" style={styles.mb20}>Register to Stockly</Text>
             <Text style={styles.mb20}>Enter your information</Text>
             <Controller 
@@ -43,6 +46,8 @@ const Register = () => {
                             placeholder="Enter your first name"
                             onChangeText={onChange}
                             value={value}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
+                            size="large"
                         /> 
                         { (errors as any)?.firstName?.message && <Text style={styles.textDanger}>{(errors as any)?.firstName?.message}</Text>}
                     </View>
@@ -59,6 +64,8 @@ const Register = () => {
                             placeholder="Enter your last name"
                             onChangeText={onChange}
                             value={value}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
+                            size="large"
                         /> 
                         { (errors as any)?.lastName?.message && <Text style={styles.textDanger}>{(errors as any)?.lastName?.message}</Text>}
                     </View>
@@ -75,6 +82,8 @@ const Register = () => {
                             placeholder="Enter your email"
                             onChangeText={onChange}
                             value={value}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
+                            size="large"
                         /> 
                         { (errors as any)?.email?.message && <Text style={styles.textDanger}>{(errors as any)?.email?.message}</Text>}
                     </View>
@@ -92,6 +101,8 @@ const Register = () => {
                             secureTextEntry={true}
                             onChangeText={onChange}
                             value={value}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
+                            size="large"
                         /> 
                         { (errors as any)?.password?.message && <Text style={styles.textDanger}>{(errors as any)?.password?.message}</Text>}
                     </View>
@@ -109,13 +120,15 @@ const Register = () => {
                             placeholder="Enter confirm password"
                             onChangeText={onChange}
                             value={value}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
+                            size="large"
                         /> 
                         { (errors as any)?.confirmPassword?.message && <Text style={styles.textDanger}>{(errors as any)?.confirmPassword?.message}</Text>}
                     </View>
                 )}
                 rules={{required: 'Confirm password is required'}}
             />
-            <Button style={styles.mb20} onPress={handleSubmit(formSubmitHandler)}>Register</Button>
+            <Button disabled={loading} size="large" style={[styles.mb20, {borderRadius: 20}]} onPress={handleSubmit(formSubmitHandler)}>{loading ? 'Loading...' : 'Register'}</Button>
             {/* <View style={localStyles.otherWaysLoginWrapper}>
                 <Divider style={localStyles.otherWaysDivider} />
                 <Text style={[styles.mb20, localStyles.loginWithText]}>Or Login with</Text>

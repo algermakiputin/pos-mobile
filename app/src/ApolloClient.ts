@@ -6,9 +6,10 @@ const getToken = async () => {
     const token = await AsyncStorage.getItem('token');
     return token;
 }
-
+console.log(`graphql url`, process.env.EXPO_PUBLIC_GRAPHQL_URL);
 const httpLink = createHttpLink({
-    uri: 'http://192.168.254.104:3333'
+    uri: 'http://192.168.254.102:4000'
+    //uri: process.env.EXPO_PUBLIC_GRAPHQL_URL,
 });
 
 

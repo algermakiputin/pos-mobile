@@ -1,4 +1,4 @@
-import { Card, Divider, List, ListItem, Text } from "@ui-kitten/components";
+import { Card, Divider, List, ListItem, Text, Button } from "@ui-kitten/components";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { StyleSheet, View } from "react-native";
 import { GET_SALES_DETAILS } from "@/app/src/sales-queries";
@@ -30,7 +30,8 @@ const SalesDetails = () => {
         <ListItem
             title={`${item.name} ${index + 1}`}
             description={`${item.quantity}x ${formatAmount(item.price)}`}
-            accessoryRight={<View style={{width:150, backgroundColor: 'red'}}><Text style={{ flex: 1 }}>123</Text></View>}
+            accessoryLeft={<View><Text>{index}</Text></View>}
+            accessoryRight={() => <View><Text>{ formatAmount(item.quantity * item.price) }</Text></View>}
         />
     );
     return <View style={{flex: 1, backgroundColor: '', height: '100%'}}>

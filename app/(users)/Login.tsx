@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Text } from "@ui-kitten/components";
+import { Button, Input, Text, useTheme } from "@ui-kitten/components";
 import { Image, StyleSheet, View } from "react-native";
 import styles, { primaryColor } from "../styles/style";
 import { useRouter } from "expo-router";
@@ -15,10 +15,11 @@ const Login = () => {
     const redirectToRegister = () => {
         route.navigate('/Register');
     }
+    const theme = useTheme()
     const { setUser } = useContext(UserContext);
     const [login, { loading, error }] = useMutation(LOGIN, { errorPolicy: 'all'});
     const { control, handleSubmit, formState: { errors }, reset } = useForm();
-    console.log(`error`, error);
+
     const handleFormSubmit = async (data: any) => {
         try {
             const userLogin = await login({
@@ -43,7 +44,7 @@ const Login = () => {
     }
     
     return (
-        <View style={localStyles.container}>
+        <View style={[localStyles.container, {backgroundColor: theme['background-basic-color-2']}]}>
             <Image source={appLogo} style={{width: 102, height:  80, marginBottom: 25, alignSelf: 'center'}} />
             <Text category="h2" style={[styles.mb20]}>Login to Stockly</Text>
             <Text style={styles.mb20}>Login to continue using the app</Text>
@@ -51,13 +52,15 @@ const Login = () => {
                 name="email"
                 control={control}
                 render={({field: {onChange, value, onBlur}}) => (  
-                    <View style={styles.mb20}>
+                    <View style={[styles.mb20]}>
                         <Input 
                             label={"Email"}
                             placeholder="Enter your email"
                             onChangeText={onChange}
                             value={value}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
                             onBlur={onBlur}
+                            size="large"
                         />
                         { (errors as any)?.email?.message && <Text style={styles.textDanger}>{(errors as any)?.email?.message}</Text>}
                     </View>
@@ -68,21 +71,23 @@ const Login = () => {
                 name="password"
                 control={control}
                 render={({field: {onChange, value, onBlur}}) => (  
-                    <View style={styles.mb20}>
+                    <View style={[styles.mb20]}>
                         <Input 
                             label={"Password"}
                             placeholder="Enter password"
                             onChangeText={onChange}
                             value={value}
                             onBlur={onBlur}
+                            style={{backgroundColor: theme['background-basic-color-1'], borderRadius: 20}}
                             secureTextEntry={true}
+                            size="large"
                         />
                         { (errors as any)?.password?.message && <Text style={styles.textDanger}>{(errors as any)?.password?.message}</Text>}
                     </View>
                 )}
                 rules={{required: 'Password is required'}}
             /> 
-            <Button style={styles.mb20} onPress={handleSubmit(handleFormSubmit)} disabled={loading}>{ loading ? 'Loading...' : 'Login'}</Button>
+            <Button size="large" style={[styles.mb20, { borderRadius: 20, backgroundColor: theme['color-primary-500']}]} onPress={handleSubmit(handleFormSubmit)} disabled={loading}>{ loading ? 'Loading...' : 'Login'}</Button>
             {/* <View style={localStyles.otherWaysLoginWrapper}>
                 <Divider style={localStyles.otherWaysDivider} />
                 <Text style={[styles.mb20, localStyles.loginWithText]}>Or Login with</Text>
