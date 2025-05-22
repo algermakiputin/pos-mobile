@@ -149,13 +149,10 @@ const EditItem = () => {
 
     console.log(`formValues`, formValues);
 
-    useEffect(() => {
-        if (!dataLoaded) {
-            inputChangeHandler('id', itemData?.item?.id);
-            setFormValues(itemData?.item); 
-            reset(itemData?.item);
-            setDataLoaded(true)
-        }
+    useEffect(() => { 
+        inputChangeHandler('id', itemData?.item?.id);
+        setFormValues(itemData?.item); 
+        reset(itemData?.item);
     }, [itemData]); 
     
     if (itemLoading || categoryLoading || supplierLoading) return <BasicLoader />;

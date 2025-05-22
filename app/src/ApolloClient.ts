@@ -8,8 +8,8 @@ const getToken = async () => {
 }
 console.log(`graphql url`, process.env.EXPO_PUBLIC_GRAPHQL_URL);
 const httpLink = createHttpLink({
-    uri: 'http://192.168.254.102:4000'
-    //uri: process.env.EXPO_PUBLIC_GRAPHQL_URL,
+    //uri: 'http://192.168.254.102:4000'
+    uri: process.env.EXPO_PUBLIC_GRAPHQL_URL,
 });
 
 

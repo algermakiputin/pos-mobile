@@ -101,7 +101,7 @@ const Orders = () => {
     }   
     
     return (
-        <View style={style.container}>
+        <View style={[style.container, {paddingBottom: 80}]}>
             <View style={style.searchContainer}>
                 <Input onChangeText={searchHandler} style={style.searchInput} placeholder="Search Item" accessoryLeft={<Ionicons name="search-outline" />} />
             </View>
